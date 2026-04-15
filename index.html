@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Highway Secondary School — Management System</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.8.0/Recharts.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#0a7c4b;--green-l:#e8f5ef;--green-m:#1aab6d;--green-d:#065c37;
+  --gold:#c8860a;--gold-l:#fdf3e0;--gold-m:#e9a020;
+  --red:#d93025;--red-l:#fdecea;
+  --blue:#1a73e8;--blue-l:#e8f0fe;
+  --purple:#7b2d8b;--purple-l:#f3e8f7;
+  --gray-50:#f8f9fa;--gray-100:#f1f3f4;--gray-200:#e8eaed;--gray-300:#dadce0;
+  --gray-400:#bdc1c6;--gray-500:#9aa0a6;--gray-600:#80868b;
+  --gray-700:#5f6368;--gray-800:#3c4043;--gray-900:#202124;
+  --sidebar-w:260px;--topbar-h:64px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.1),0 2px 6px rgba(0,0,0,.06);
+  --shadow-lg:0 10px 40px rgba(0,0,0,.12);
+  --radius-sm:6px;--radius-md:10px;--radius-lg:14px;--radius-xl:20px;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f4f8;color:var(--gray-900);min-height:100vh;overflow-x:hidden}
+#root{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar-w);min-height:100vh;background:linear-gradient(175deg,#063d24 0%,#0a5c38 40%,#0d7048 100%);
+  position:fixed;left:0;top:0;z-index:100;display:flex;flex-direction:column;
+  box-shadow:4px 0 24px rgba(0,0,0,.15);transition:transform .3s ease;
+}
+.sidebar-brand{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-brand-logo{width:44px;height:44px;background:var(--gold-m);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:700;color:#fff;font-size:18px;margin-bottom:10px}
+.sidebar-brand-name{font-family:'Sora',sans-serif;color:#fff;font-weight:700;font-size:14px;line-height:1.3}
+.sidebar-brand-sub{color:rgba(255,255,255,.5);font-size:11px;margin-top:2px}
+.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto}
+.nav-section{padding:16px 16px 8px;color:rgba(255,255,255,.4);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:1px 8px;border-radius:8px;cursor:pointer;transition:all .18s;color:rgba(255,255,255,.75);font-size:13.5px;font-weight:500;user-select:none}
+.nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.18);color:#fff;font-weight:600}
+.nav-item svg{opacity:.8;flex-shrink:0}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--gold-m);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px}
+.sidebar-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.1)}
+.user-pill{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;transition:background .18s}
+.user-pill:hover{background:rgba(255,255,255,.08)}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--gold-m);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:13px;flex-shrink:0}
+.user-name{color:#fff;font-size:13px;font-weight:600}
+.user-role{color:rgba(255,255,255,.5);font-size:11px}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 28px;gap:16px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow-sm)}
+.topbar-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;color:var(--gray-900)}
+.topbar-sub{font-size:12px;color:var(--gray-500);margin-top:1px}
+.topbar-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .18s;font-family:inherit}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:var(--green-d)}
+.btn-outline{background:#fff;color:var(--gray-800);border:1.5px solid var(--gray-300)}
+.btn-outline:hover{border-color:var(--green);color:var(--green)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-icon{width:36px;height:36px;padding:0;justify-content:center;border-radius:8px;background:var(--gray-100);color:var(--gray-700);border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .18s}
+.btn-icon:hover{background:var(--gray-200)}
+.page{padding:28px;flex:1}
+
+/* CARDS */
+.card{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--gray-200);box-shadow:var(--shadow-sm);overflow:hidden}
+.card-header{padding:18px 20px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:700;color:var(--gray-900)}
+.card-body{padding:20px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--gray-200);padding:20px;display:flex;align-items:flex-start;gap:14px;box-shadow:var(--shadow-sm);transition:box-shadow .2s}
+.stat-card:hover{box-shadow:var(--shadow-md)}
+.stat-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px}
+.stat-label{font-size:12px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.stat-value{font-size:26px;font-weight:800;color:var(--gray-900);line-height:1;font-family:'Sora',sans-serif}
+.stat-change{font-size:12px;color:var(--green);font-weight:600;margin-top:4px}
+.stat-change.neg{color:var(--red)}
+
+/* TABLES */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;padding:10px 14px;background:var(--gray-50);color:var(--gray-600);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--gray-200)}
+td{padding:13px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-800);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--gray-50)}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:700;line-height:1.4}
+.badge-green{background:var(--green-l);color:var(--green-d)}
+.badge-gold{background:var(--gold-l);color:var(--gold)}
+.badge-red{background:var(--red-l);color:var(--red)}
+.badge-blue{background:var(--blue-l);color:var(--blue)}
+.badge-purple{background:var(--purple-l);color:var(--purple)}
+.badge-gray{background:var(--gray-100);color:var(--gray-600)}
+
+/* AVATAR */
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;flex-shrink:0}
+
+/* GRID HELPERS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.flex{display:flex}
+.flex-col{flex-direction:column}
+.items-center{align-items:center}
+.gap-2{gap:8px}
+.gap-3{gap:12px}
+.gap-4{gap:16px}
+.mb-4{margin-bottom:16px}
+.mb-6{margin-bottom:24px}
+.mt-4{margin-top:16px}
+.ml-auto{margin-left:auto}
+
+/* FORMS */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12.5px;font-weight:700;color:var(--gray-700);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.form-control{width:100%;padding:9px 12px;border:1.5px solid var(--gray-300);border-radius:8px;font-size:13.5px;font-family:inherit;color:var(--gray-900);transition:border-color .18s;outline:none;background:#fff}
+.form-control:focus{border-color:var(--green)}
+select.form-control{cursor:pointer}
+
+/* PROGRESS BARS */
+.progress{height:8px;background:var(--gray-200);border-radius:99px;overflow:hidden}
+.progress-bar{height:100%;border-radius:99px;transition:width .4s ease}
+
+/* TABS */
+.tabs{display:flex;border-bottom:2px solid var(--gray-200);margin-bottom:20px;gap:0}
+.tab{padding:10px 18px;font-size:13px;font-weight:600;color:var(--gray-500);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-2px;transition:all .18s;white-space:nowrap}
+.tab:hover{color:var(--gray-800)}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+
+/* CBC LEVEL CHIPS */
+.pathway-stem{background:#e8f0fe;color:#1a73e8}
+.pathway-arts{background:#fce8f3;color:#c2185b}
+.pathway-social{background:#e8f5e9;color:#2e7d32}
+.pathway-junior{background:#fff8e1;color:#f57f17}
+
+/* COMPETENCY BARS */
+.comp-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.comp-label{font-size:12.5px;color:var(--gray-700);width:160px;flex-shrink:0}
+.comp-bar{flex:1;height:10px;background:var(--gray-200);border-radius:99px;overflow:hidden}
+.comp-fill{height:100%;border-radius:99px}
+.comp-pct{font-size:12px;font-weight:700;width:38px;text-align:right;color:var(--gray-700)}
+.exceeding{background:linear-gradient(90deg,#0a7c4b,#1aab6d)}
+.meeting{background:linear-gradient(90deg,#1a73e8,#4fa3ff)}
+.approaching{background:linear-gradient(90deg,#c8860a,#e9a020)}
+.below{background:linear-gradient(90deg,#d93025,#f44336)}
+
+/* NOTIFICATION DOT */
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block;margin-left:4px}
+
+/* MODAL OVERLAY */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s}
+.modal{background:#fff;border-radius:var(--radius-xl);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .25s ease}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:16px;font-weight:800;color:var(--gray-900);font-family:'Sora',sans-serif}
+.modal-body{padding:24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--gray-100);display:flex;gap:10px;justify-content:flex-end}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ANNOUNCEMENT */
+.announcement{background:linear-gradient(135deg,var(--green-l),#f0faf5);border:1px solid #b8e0cc;border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start}
+.ann-icon{width:36px;height:36px;border-radius:8px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ann-title{font-size:13.5px;font-weight:700;color:var(--gray-900);margin-bottom:3px}
+.ann-body{font-size:12.5px;color:var(--gray-600);line-height:1.5}
+.ann-date{font-size:11px;color:var(--gray-400);margin-top:4px}
+
+/* CHART CONTAINER */
+.chart-container{width:100%;height:260px}
+
+/* TIMETABLE GRID */
+.tt-grid{display:grid;grid-template-columns:80px repeat(5,1fr);gap:3px;font-size:12px}
+.tt-head{background:var(--green);color:#fff;padding:8px 6px;border-radius:6px;text-align:center;font-weight:700;font-size:11.5px}
+.tt-time{background:var(--gray-100);border-radius:6px;padding:8px 6px;text-align:center;font-weight:600;color:var(--gray-500);font-size:11px;display:flex;align-items:center;justify-content:center}
+.tt-cell{border-radius:6px;padding:8px 8px;text-align:center;font-size:11.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:52px;cursor:pointer;transition:opacity .15s}
+.tt-cell:hover{opacity:.85}
+.tt-empty{background:var(--gray-50);border:1px dashed var(--gray-200);border-radius:6px;min-height:52px}
+
+/* ATTENDANCE CALENDAR */
+.att-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.att-day-head{text-align:center;font-size:10.5px;font-weight:700;color:var(--gray-500);padding:4px 0;text-transform:uppercase}
+.att-day{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.att-present{background:var(--green-l);color:var(--green-d)}
+.att-absent{background:var(--red-l);color:var(--red)}
+.att-late{background:var(--gold-l);color:var(--gold)}
+.att-none{background:var(--gray-100);color:var(--gray-400)}
+.att-today{ring:2px solid var(--green)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:540px){
+  .stat-grid{grid-template-columns:1fr}
+  .page{padding:16px}
+  .topbar{padding:0 16px}
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:var(--gray-400)}
+
+/* SEARCH */
+.search-box{display:flex;align-items:center;gap:8px;background:var(--gray-100);border-radius:8px;padding:7px 12px;font-size:13px;color:var(--gray-500);cursor:text;min-width:200px;border:1.5px solid transparent;transition:all .18s}
+.search-box:focus-within{background:#fff;border-color:var(--green)}
+.search-box input{border:none;background:transparent;outline:none;font-size:13px;font-family:inherit;color:var(--gray-900);width:100%}
+
+/* WELCOME BANNER */
+.welcome-banner{background:linear-gradient(135deg,#063d24 0%,#0a5c38 50%,#0d7048 100%);border-radius:var(--radius-xl);padding:28px 32px;color:#fff;margin-bottom:24px;position:relative;overflow:hidden}
+.welcome-banner::after{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:rgba(255,255,255,.04);border-radius:50%}
+.welcome-banner::before{content:'';position:absolute;right:60px;bottom:-60px;width:160px;height:160px;background:rgba(255,255,255,.03);border-radius:50%}
+.wb-greeting{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:4px}
+.wb-name{font-family:'Sora',sans-serif;font-size:24px;font-weight:700;margin-bottom:8px}
+.wb-sub{font-size:13px;color:rgba(255,255,255,.65);line-height:1.5}
+.wb-stats{display:flex;gap:24px;margin-top:20px}
+.wb-stat{border-left:2px solid rgba(255,255,255,.2);padding-left:16px}
+.wb-stat-val{font-size:22px;font-weight:800;font-family:'Sora',sans-serif}
+.wb-stat-label{font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+
+/* LOADING */
+.skeleton{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* QUICK ACTION BUTTONS */
+.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.qa-btn{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:16px 12px;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:8px}
+.qa-btn:hover{border-color:var(--green);box-shadow:var(--shadow-sm)}
+.qa-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.qa-label{font-size:12px;font-weight:700;color:var(--gray-700)}
+
+/* ACTIVITY FEED */
+.activity-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--gray-100)}
+.activity-item:last-child{border-bottom:none}
+.act-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.act-text{font-size:13px;color:var(--gray-700);line-height:1.4}
+.act-time{font-size:11px;color:var(--gray-400);margin-top:2px}
+
+/* CBC PATHWAY CARD */
+.pathway-card{border-radius:var(--radius-lg);padding:20px;border:2px solid;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.pathway-card:hover{box-shadow:var(--shadow-md)}
+.pathway-card.selected{box-shadow:0 0 0 3px currentColor}
+.pathway-card-stem{background:#e8f0fe;border-color:#4285f4;color:#1a73e8}
+.pathway-card-arts{background:#fce8f3;border-color:#e91e8c;color:#c2185b}
+.pathway-card-social{background:#e8f5e9;border-color:#43a047;color:#2e7d32}
+
+/* FEE STATUS */
+.fee-card{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--gray-200);padding:18px 20px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
+.fee-amt{font-size:22px;font-weight:800;font-family:'Sora',sans-serif;color:var(--gray-900)}
+.fee-term{font-size:12px;color:var(--gray-500);margin-top:2px}
+.fee-progress{flex:1}
+
+/* NOTIFICATION PANEL */
+.notif-item{padding:12px 16px;border-bottom:1px solid var(--gray-100);cursor:pointer;transition:background .15s;display:flex;gap:12px;align-items:flex-start}
+.notif-item:hover{background:var(--gray-50)}
+.notif-item.unread{background:var(--blue-l)}
+.notif-dot-ind{width:8px;height:8px;border-radius:50%;background:var(--blue);margin-top:5px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useCallback, useMemo } = React;
+const { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, AreaChart, Area } = Recharts;
+
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const STUDENTS = [
+  {id:'S001',name:'Amina Osei',grade:'Grade 8',stream:'A',pathway:'Junior',gender:'F',dob:'2010-03-14',guardian:'Kofi Osei',phone:'+254722111222',fees:'paid',attendance:94,gpa:3.8,status:'active'},
+  {id:'S002',name:'Brian Mutua',grade:'Grade 9',stream:'B',pathway:'Junior',gender:'M',dob:'2009-07-22',guardian:'Josephine Mutua',phone:'+254733222333',fees:'partial',attendance:87,gpa:3.2,status:'active'},
+  {id:'S003',name:'Cynthia Wanjiku',grade:'Grade 10',stream:'A',pathway:'STEM',gender:'F',dob:'2008-11-05',guardian:'Peter Wanjiku',phone:'+254744333444',fees:'paid',attendance:98,gpa:4.0,status:'active'},
+  {id:'S004',name:'David Otieno',grade:'Grade 11',stream:'B',pathway:'STEM',gender:'M',dob:'2007-01-30',guardian:'Mary Otieno',phone:'+254755444555',fees:'arrears',attendance:79,gpa:2.8,status:'active'},
+  {id:'S005',name:'Esther Kamau',grade:'Grade 12',stream:'A',pathway:'Social Sciences',gender:'F',dob:'2006-09-18',guardian:'John Kamau',phone:'+254766555666',fees:'paid',attendance:92,gpa:3.6,status:'active'},
+  {id:'S006',name:'Felix Omondi',grade:'Grade 7',stream:'C',pathway:'Junior',gender:'M',dob:'2011-04-02',guardian:'Grace Omondi',phone:'+254777666777',fees:'paid',attendance:96,gpa:3.9,status:'active'},
+  {id:'S007',name:'Gloria Njeri',grade:'Grade 10',stream:'B',pathway:'Arts & Sports',gender:'F',dob:'2008-06-25',guardian:'Samuel Njeri',phone:'+254788777888',fees:'partial',attendance:88,gpa:3.4,status:'active'},
+  {id:'S008',name:'Hassan Abdi',grade:'Grade 8',stream:'A',pathway:'Junior',gender:'M',dob:'2010-12-11',guardian:'Fadumo Abdi',phone:'+254799888999',fees:'paid',attendance:91,gpa:3.5,status:'active'},
+  {id:'S009',name:'Irene Chepkoech',grade:'Grade 9',stream:'A',pathway:'Junior',gender:'F',dob:'2009-08-17',guardian:'Kibet Chepkoech',phone:'+254700999000',fees:'paid',attendance:95,gpa:3.7,status:'active'},
+  {id:'S010',name:'James Kariuki',grade:'Grade 11',stream:'A',pathway:'STEM',gender:'M',dob:'2007-03-08',guardian:'Rose Kariuki',phone:'+254711000111',fees:'arrears',attendance:82,gpa:3.0,status:'active'},
+  {id:'S011',name:'Kelvin Mwangi',grade:'Grade 12',stream:'C',pathway:'Social Sciences',gender:'M',dob:'2006-11-29',guardian:'Ann Mwangi',phone:'+254722111333',fees:'paid',attendance:90,gpa:3.3,status:'active'},
+  {id:'S012',name:'Lilian Achieng',grade:'Grade 7',stream:'B',pathway:'Junior',gender:'F',dob:'2011-02-14',guardian:'Tom Achieng',phone:'+254733222444',fees:'paid',attendance:97,gpa:4.0,status:'active'},
+];
+
+const TEACHERS = [
+  {id:'T001',name:'Mr. Dennis Kiptoo',subject:'Mathematics',grade:'Grade 10-12',experience:8,classes:['10A','10B','11A'],email:'d.kiptoo@highway.ac.ke',phone:'+254720001001',status:'active'},
+  {id:'T002',name:'Ms. Ruth Njoroge',subject:'Integrated Science',grade:'Grade 7-9',experience:5,classes:['7A','8A','9A'],email:'r.njoroge@highway.ac.ke',phone:'+254720001002',status:'active'},
+  {id:'T003',name:'Mr. Alfred Otieno',subject:'English',grade:'Grade 7-12',experience:12,classes:['8A','9B','10A'],email:'a.otieno@highway.ac.ke',phone:'+254720001003',status:'active'},
+  {id:'T004',name:'Ms. Fatuma Hassan',subject:'Kiswahili',grade:'Grade 7-12',experience:7,classes:['7C','8B','9A'],email:'f.hassan@highway.ac.ke',phone:'+254720001004',status:'active'},
+  {id:'T005',name:'Mr. Samuel Gitonga',subject:'Physics',grade:'Grade 10-12',experience:10,classes:['10A','11B','12A'],email:'s.gitonga@highway.ac.ke',phone:'+254720001005',status:'active'},
+  {id:'T006',name:'Ms. Carol Wambua',subject:'Computer Science',grade:'Grade 9-12',experience:4,classes:['9A','10B','11A'],email:'c.wambua@highway.ac.ke',phone:'+254720001006',status:'active'},
+  {id:'T007',name:'Mr. Joseph Mutinda',subject:'Biology/Chemistry',grade:'Grade 10-12',experience:9,classes:['10A','11A','12B'],email:'j.mutinda@highway.ac.ke',phone:'+254720001007',status:'active'},
+  {id:'T008',name:'Ms. Esther Auma',subject:'Social Studies',grade:'Grade 7-9',experience:6,classes:['7A','7B','8C'],email:'e.auma@highway.ac.ke',phone:'+254720001008',status:'active'},
+];
+
+const LEARNING_AREAS = [
+  {id:'LA01',name:'Mathematics',code:'MTH',pathways:['Junior','STEM'],hod:'Mr. Dennis Kiptoo',teachers:3},
+  {id:'LA02',name:'Integrated Science',code:'ISC',pathways:['Junior'],hod:'Ms. Ruth Njoroge',teachers:2},
+  {id:'LA03',name:'English Language',code:'ENG',pathways:['Junior','STEM','Arts & Sports','Social Sciences'],hod:'Mr. Alfred Otieno',teachers:4},
+  {id:'LA04',name:'Kiswahili',code:'KIS',pathways:['Junior','STEM','Arts & Sports','Social Sciences'],hod:'Ms. Fatuma Hassan',teachers:3},
+  {id:'LA05',name:'Physics',code:'PHY',pathways:['STEM'],hod:'Mr. Samuel Gitonga',teachers:2},
+  {id:'LA06',name:'Chemistry',code:'CHE',pathways:['STEM'],hod:'Mr. Joseph Mutinda',teachers:2},
+  {id:'LA07',name:'Biology',code:'BIO',pathways:['STEM'],hod:'Mr. Joseph Mutinda',teachers:2},
+  {id:'LA08',name:'Computer Science',code:'CSC',pathways:['STEM','Junior'],hod:'Ms. Carol Wambua',teachers:2},
+  {id:'LA09',name:'Social Studies',code:'SST',pathways:['Junior','Social Sciences'],hod:'Ms. Esther Auma',teachers:3},
+  {id:'LA10',name:'Pre-Technical Studies',code:'PTS',pathways:['Junior'],hod:'Mr. Tom Maina',teachers:2},
+  {id:'LA11',name:'Creative Arts & Sports',code:'CAS',pathways:['Arts & Sports','Junior'],hod:'Ms. Joyce Adhiambo',teachers:3},
+  {id:'LA12',name:'Business Studies',code:'BST',pathways:['Social Sciences'],hod:'Mr. Paul Ochieng',teachers:2},
+];
+
+const ASSESSMENTS_DATA = [
+  {id:'A001',student:'Amina Osei',area:'Mathematics',type:'SBA',score:85,level:'Exceeding',date:'2025-01-15',teacher:'Mr. Dennis Kiptoo',term:'Term 1'},
+  {id:'A002',student:'Brian Mutua',area:'English Language',type:'Project',score:72,level:'Meeting',date:'2025-01-18',teacher:'Mr. Alfred Otieno',term:'Term 1'},
+  {id:'A003',student:'Cynthia Wanjiku',area:'Physics',type:'SBA',score:91,level:'Exceeding',date:'2025-01-20',teacher:'Mr. Samuel Gitonga',term:'Term 1'},
+  {id:'A004',student:'David Otieno',area:'Chemistry',type:'Practical',score:65,level:'Approaching',date:'2025-01-22',teacher:'Mr. Joseph Mutinda',term:'Term 1'},
+  {id:'A005',student:'Esther Kamau',area:'Social Studies',type:'Portfolio',score:78,level:'Meeting',date:'2025-01-25',teacher:'Ms. Esther Auma',term:'Term 1'},
+  {id:'A006',student:'Felix Omondi',area:'Integrated Science',type:'SBA',score:88,level:'Exceeding',date:'2025-01-28',teacher:'Ms. Ruth Njoroge',term:'Term 1'},
+  {id:'A007',student:'Gloria Njeri',area:'Creative Arts',type:'Performance',score:94,level:'Exceeding',date:'2025-02-01',teacher:'Ms. Joyce Adhiambo',term:'Term 1'},
+  {id:'A008',student:'Hassan Abdi',area:'Kiswahili',type:'SBA',score:70,level:'Meeting',date:'2025-02-03',teacher:'Ms. Fatuma Hassan',term:'Term 1'},
+];
+
+const TIMETABLE = {
+  '7A': [
+    {period:'7:00-7:40',Mon:{sub:'Assembly',color:'#e8f5e9',tc:'#2e7d32'},Tue:{sub:'Assembly',color:'#e8f5e9',tc:'#2e7d32'},Wed:{sub:'Assembly',color:'#e8f5e9',tc:'#2e7d32'},Thu:{sub:'Assembly',color:'#e8f5e9',tc:'#2e7d32'},Fri:{sub:'Assembly',color:'#e8f5e9',tc:'#2e7d32'}},
+    {period:'7:45-8:25',Mon:{sub:'Mathematics',teacher:'Mr. Kiptoo',color:'#e8f0fe',tc:'#1a73e8'},Tue:{sub:'English',teacher:'Mr. Otieno',color:'#fce8f3',tc:'#c2185b'},Wed:{sub:'Kiswahili',teacher:'Ms. Hassan',color:'#fff8e1',tc:'#f57f17'},Thu:{sub:'Mathematics',teacher:'Mr. Kiptoo',color:'#e8f0fe',tc:'#1a73e8'},Fri:{sub:'Social Studies',teacher:'Ms. Auma',color:'#e8f5e9',tc:'#2e7d32'}},
+    {period:'8:30-9:10',Mon:{sub:'Int. Science',teacher:'Ms. Njoroge',color:'#f3e8f7',tc:'#7b2d8b'},Tue:{sub:'Mathematics',teacher:'Mr. Kiptoo',color:'#e8f0fe',tc:'#1a73e8'},Wed:{sub:'English',teacher:'Mr. Otieno',color:'#fce8f3',tc:'#c2185b'},Thu:{sub:'Int. Science',teacher:'Ms. Njoroge',color:'#f3e8f7',tc:'#7b2d8b'},Fri:{sub:'Mathematics',teacher:'Mr. Kiptoo',color:'#e8f0fe',tc:'#1a73e8'}},
+    {period:'9:15-9:55',Mon:{sub:'Social Studies',teacher:'Ms. Auma',color:'#e8f5e9',tc:'#2e7d32'},Tue:{sub:'Pre-Tech',teacher:'Mr. Maina',color:'#fdecea',tc:'#d93025'},Wed:{sub:'Int. Science',teacher:'Ms. Njoroge',color:'#f3e8f7',tc:'#7b2d8b'},Thu:{sub:'English',teacher:'Mr. Otieno',color:'#fce8f3',tc:'#c2185b'},Fri:{sub:'Kiswahili',teacher:'Ms. Hassan',color:'#fff8e1',tc:'#f57f17'}},
+    {period:'10:00-10:15',Mon:{sub:'BREAK',color:'#f8f9fa',tc:'#9aa0a6'},Tue:{sub:'BREAK',color:'#f8f9fa',tc:'#9aa0a6'},Wed:{sub:'BREAK',color:'#f8f9fa',tc:'#9aa0a6'},Thu:{sub:'BREAK',color:'#f8f9fa',tc:'#9aa0a6'},Fri:{sub:'BREAK',color:'#f8f9fa',tc:'#9aa0a6'}},
+    {period:'10:20-11:00',Mon:{sub:'Computer Sc.',teacher:'Ms. Wambua',color:'#e8eaed',tc:'#3c4043'},Tue:{sub:'Social Studies',teacher:'Ms. Auma',color:'#e8f5e9',tc:'#2e7d32'},Wed:{sub:'Creative Arts',teacher:'Ms. Adhiambo',color:'#fff3e0',tc:'#e65100'},Thu:{sub:'Kiswahili',teacher:'Ms. Hassan',color:'#fff8e1',tc:'#f57f17'},Fri:{sub:'Int. Science',teacher:'Ms. Njoroge',color:'#f3e8f7',tc:'#7b2d8b'}},
+    {period:'11:05-11:45',Mon:{sub:'Kiswahili',teacher:'Ms. Hassan',color:'#fff8e1',tc:'#f57f17'},Tue:{sub:'Computer Sc.',teacher:'Ms. Wambua',color:'#e8eaed',tc:'#3c4043'},Wed:{sub:'Social Studies',teacher:'Ms. Auma',color:'#e8f5e9',tc:'#2e7d32'},Thu:{sub:'Creative Arts',teacher:'Ms. Adhiambo',color:'#fff3e0',tc:'#e65100'},Fri:{sub:'Pre-Tech',teacher:'Mr. Maina',color:'#fdecea',tc:'#d93025'}},
+    {period:'11:50-12:30',Mon:{sub:'English',teacher:'Mr. Otieno',color:'#fce8f3',tc:'#c2185b'},Tue:{sub:'Kiswahili',teacher:'Ms. Hassan',color:'#fff8e1',tc:'#f57f17'},Wed:{sub:'Mathematics',teacher:'Mr. Kiptoo',color:'#e8f0fe',tc:'#1a73e8'},Thu:{sub:'Pre-Tech',teacher:'Mr. Maina',color:'#fdecea',tc:'#d93025'},Fri:{sub:'Creative Arts',teacher:'Ms. Adhiambo',color:'#fff3e0',tc:'#e65100'}},
+    {period:'12:30-13:30',Mon:{sub:'LUNCH',color:'#f8f9fa',tc:'#9aa0a6'},Tue:{sub:'LUNCH',color:'#f8f9fa',tc:'#9aa0a6'},Wed:{sub:'LUNCH',color:'#f8f9fa',tc:'#9aa0a6'},Thu:{sub:'LUNCH',color:'#f8f9fa',tc:'#9aa0a6'},Fri:{sub:'LUNCH',color:'#f8f9fa',tc:'#9aa0a6'}},
+    {period:'13:35-14:15',Mon:{sub:'Pre-Tech',teacher:'Mr. Maina',color:'#fdecea',tc:'#d93025'},Tue:{sub:'Int. Science',teacher:'Ms. Njoroge',color:'#f3e8f7',tc:'#7b2d8b'},Wed:{sub:'Computer Sc.',teacher:'Ms. Wambua',color:'#e8eaed',tc:'#3c4043'},Thu:{sub:'Social Studies',teacher:'Ms. Auma',color:'#e8f5e9',tc:'#2e7d32'},Fri:{sub:'English',teacher:'Mr. Otieno',color:'#fce8f3',tc:'#c2185b'}},
+    {period:'14:20-15:00',Mon:{sub:'Creative Arts',teacher:'Ms. Adhiambo',color:'#fff3e0',tc:'#e65100'},Tue:{sub:'Sports/PE',teacher:'Mr. Kamau',color:'#e3f2fd',tc:'#1565c0'},Wed:{sub:'Sports/PE',teacher:'Mr. Kamau',color:'#e3f2fd',tc:'#1565c0'},Thu:{sub:'Computer Sc.',teacher:'Ms. Wambua',color:'#e8eaed',tc:'#3c4043'},Fri:{sub:'Life Skills',teacher:'Counselor',color:'#e8f5e9',tc:'#2e7d32'}},
+  ]
+};
+
+const PAYMENTS = [
+  {id:'P001',student:'Amina Osei',grade:'Grade 8',term:'Term 1 2025',amount:18500,paid:18500,balance:0,date:'2025-01-08',method:'M-Pesa',ref:'QAB123456',status:'paid'},
+  {id:'P002',student:'Brian Mutua',grade:'Grade 9',term:'Term 1 2025',amount:18500,paid:10000,balance:8500,date:'2025-01-15',method:'Bank',ref:'BNK789012',status:'partial'},
+  {id:'P003',student:'Cynthia Wanjiku',grade:'Grade 10',term:'Term 1 2025',amount:22000,paid:22000,balance:0,date:'2025-01-05',method:'M-Pesa',ref:'QAC234567',status:'paid'},
+  {id:'P004',student:'David Otieno',grade:'Grade 11',term:'Term 1 2025',amount:22000,paid:0,balance:22000,date:'-',method:'-',ref:'-',status:'arrears'},
+  {id:'P005',student:'Esther Kamau',grade:'Grade 12',term:'Term 1 2025',amount:22000,paid:22000,balance:0,date:'2025-01-03',method:'M-Pesa',ref:'QAD345678',status:'paid'},
+  {id:'P006',student:'Felix Omondi',grade:'Grade 7',term:'Term 1 2025',amount:16500,paid:16500,balance:0,date:'2025-01-09',method:'Cash',ref:'CSH001',status:'paid'},
+  {id:'P007',student:'Gloria Njeri',grade:'Grade 10',term:'Term 1 2025',amount:22000,paid:12000,balance:10000,date:'2025-01-20',method:'M-Pesa',ref:'QAE456789',status:'partial'},
+  {id:'P008',student:'Hassan Abdi',grade:'Grade 8',term:'Term 1 2025',amount:18500,paid:18500,balance:0,date:'2025-01-11',method:'Bank',ref:'BNK012345',status:'paid'},
+];
+
+const ANNOUNCEMENTS = [
+  {id:1,title:'CBC Pathway Selection – Grade 9 Students',body:'All Grade 9 students must submit their Senior School pathway preference forms by 28th February 2025. Career guidance sessions scheduled weekly.',date:'15 Jan 2025',type:'academic',urgent:true},
+  {id:2,title:'Term 1 School-Based Assessment Schedule',body:'SBA assessments for all grades will commence on 3rd February 2025. Teachers should ensure assessment rubrics are uploaded two weeks in advance.',date:'12 Jan 2025',type:'academic',urgent:false},
+  {id:3,title:'Fee Payment Deadline – Term 1 2025',body:'Parents are reminded that Term 1 fees are due by 20th January 2025. M-Pesa Paybill: 123456 Account: Student Admission Number.',date:'8 Jan 2025',type:'finance',urgent:true},
+  {id:4,title:'Inter-School Sports Meet – Mombasa Road Circuit',body:'Highway Secondary will host the annual CBC Sports Day on 15th February 2025. Sports teachers to prepare selection lists.',date:'5 Jan 2025',type:'events',urgent:false},
+  {id:5,title:'ICT Lab Upgrade Complete',body:'The school's ICT lab has been fully upgraded with 40 new computers. Computer Science classes will resume in the new facility from Monday.',date:'3 Jan 2025',type:'facilities',urgent:false},
+];
+
+const PERFORMANCE_TREND = [
+  {term:'T1 2024',Math:72,English:78,Science:68,Kiswahili:75},
+  {term:'T2 2024',Math:75,English:80,Science:72,Kiswahili:77},
+  {term:'T3 2024',Math:78,English:82,Science:76,Kiswahili:79},
+  {term:'T1 2025',Math:82,English:85,Science:80,Kiswahili:83},
+];
+
+const PATHWAY_DIST = [
+  {name:'Junior Sec.',value:380,color:'#f57f17'},
+  {name:'STEM',value:220,color:'#1a73e8'},
+  {name:'Arts & Sports',value:140,color:'#c2185b'},
+  {name:'Social Sci.',value:160,color:'#2e7d32'},
+];
+
+const COMPETENCY_DATA = [
+  {name:'Communication & Collaboration',score:82,level:'Exceeding'},
+  {name:'Critical Thinking',score:74,level:'Meeting'},
+  {name:'Creativity & Imagination',score:78,level:'Meeting'},
+  {name:'Digital Literacy',score:70,level:'Meeting'},
+  {name:'Citizenship',score:85,level:'Exceeding'},
+  {name:'Self-Efficacy',score:66,level:'Approaching'},
+  {name:'Learning to Learn',score:72,level:'Meeting'},
+];
+
+const ATTENDANCE_MONTHLY = [
+  {month:'Sep',rate:96},{month:'Oct',rate:94},{month:'Nov',rate:91},
+  {month:'Dec',rate:88},{month:'Jan',rate:95},{month:'Feb',rate:93},
+];
+
+const CBC_COMPETENCIES = ['Communication & Collaboration','Critical Thinking & Problem Solving','Creativity & Imagination','Citizenship','Digital Literacy','Self-Efficacy','Learning to Learn'];
+
+// ─── ICONS ────────────────────────────────────────────────────────────────────
+const Icon = ({n,s=16,c='currentColor'}) => {
+  const paths = {
+    home:<><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></>,
+    students:<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>,
+    teacher:<><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></>,
+    academic:<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>,
+    assessment:<><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></>,
+    timetable:<><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></>,
+    finance:<><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></>,
+    analytics:<><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></>,
+    announce:<><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></>,
+    attendance:<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></>,
+    parent:<><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></>,
+    pathway:<><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+    doc:<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></>,
+    settings:<><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></>,
+    logout:<><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>,
+    plus:<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
+    search:<><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>,
+    bell:<><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></>,
+    x:<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
+    edit:<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>,
+    eye:<><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>,
+    download:<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></>,
+    upload:<><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></>,
+    mail:<><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></>,
+    phone:<><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.55 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></>,
+    filter:<><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></>,
+    award:<><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></>,
+    trending:<><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>,
+    check:<><polyline points="20 6 9 17 4 12"/></>,
+    alert:<><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></>,
+    menu:<><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></>,
+    grade:<><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></>,
+    report:<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></>,
+  };
+  return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{paths[n]||null}</svg>;
+};
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+const avatarColor = name => {
+  const colors = ['#0a7c4b','#1a73e8','#7b2d8b','#c2185b','#c8860a','#2196f3','#e91e63','#4caf50'];
+  let h = 0; for(let c of name) h = (h*31+c.charCodeAt(0))%colors.length;
+  return colors[h];
+};
+const initials = name => name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const Avatar = ({name,size=32}) => (
+  <div className="avatar" style={{width:size,height:size,background:avatarColor(name),fontSize:size*0.35}}>
+    {initials(name)}
+  </div>
+);
+const LevelBadge = ({level}) => {
+  const map = {Exceeding:['badge-green','Exceeding'],Meeting:['badge-blue','Meeting'],Approaching:['badge-gold','Approaching'],Below:['badge-red','Below']};
+  const [cls,lbl] = map[level]||['badge-gray',level];
+  return <span className={`badge ${cls}`}>{lbl}</span>;
+};
+const FeesBadge = ({status}) => {
+  const map={paid:['badge-green','Paid'],partial:['badge-gold','Partial'],arrears:['badge-red','Arrears']};
+  const [cls,lbl]=map[status]||['badge-gray',status];
+  return <span className={`badge ${cls}`}>{lbl}</span>;
+};
+const PathwayBadge = ({p}) => {
+  const map={Junior:['badge-gold','Junior Sec.'],STEM:['badge-blue','STEM'],'Arts & Sports':['badge-purple','Arts & Sports'],'Social Sciences':['badge-green','Social Sci.']};
+  const [cls,lbl]=map[p]||['badge-gray',p];
+  return <span className={`badge ${cls}`}>{lbl}</span>;
+};
+
+// ─── PAGES ───────────────────────────────────────────────────────────────────
+
+// DASHBOARD
+const Dashboard = () => {
+  const totalStudents = STUDENTS.length;
+  const totalTeachers = TEACHERS.length;
+  const avgAttendance = Math.round(STUDENTS.reduce((s,st)=>s+st.attendance,0)/STUDENTS.length);
+  const feePaid = STUDENTS.filter(s=>s.fees==='paid').length;
+
+  return (
+    <div>
+      <div className="welcome-banner">
+        <div className="wb-greeting">Welcome back 👋</div>
+        <div className="wb-name">Highway Secondary School</div>
+        <div className="wb-sub">Term 1 · January–April 2025 · CBC Competency-Based Curriculum · Nairobi County</div>
+        <div className="wb-stats">
+          <div className="wb-stat"><div className="wb-stat-val">{totalStudents}</div><div className="wb-stat-label">Students</div></div>
+          <div className="wb-stat"><div className="wb-stat-val">{totalTeachers}</div><div className="wb-stat-label">Teachers</div></div>
+          <div className="wb-stat"><div className="wb-stat-val">{avgAttendance}%</div><div className="wb-stat-label">Attendance</div></div>
+          <div className="wb-stat"><div className="wb-stat-val">4</div><div className="wb-stat-label">Pathways</div></div>
+        </div>
+      </div>
+
+      <div className="stat-grid">
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f5ef'}}><Icon n="students" c="var(--green)" s={22}/></div><div><div className="stat-label">Total Students</div><div className="stat-value">892</div><div className="stat-change">▲ +47 from last term</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f0fe'}}><Icon n="teacher" c="var(--blue)" s={22}/></div><div><div className="stat-label">Teaching Staff</div><div className="stat-value">38</div><div className="stat-change">▲ +3 new this term</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fff8e1'}}><Icon n="assessment" c="var(--gold)" s={22}/></div><div><div className="stat-label">SBAs Recorded</div><div className="stat-value">1,248</div><div className="stat-change">▲ 84% completion rate</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fdecea'}}><Icon n="finance" c="var(--red)" s={22}/></div><div><div className="stat-label">Fee Collection</div><div className="stat-value">78%</div><div className="stat-change neg">▼ Ksh 312,000 pending</div></div></div>
+      </div>
+
+      <div className="quick-actions">
+        <div className="qa-btn"><div className="qa-icon" style={{background:'#e8f5ef'}}><Icon n="plus" c="var(--green)" s={20}/></div><div className="qa-label">Add Student</div></div>
+        <div className="qa-btn"><div className="qa-icon" style={{background:'#e8f0fe'}}><Icon n="assessment" c="var(--blue)" s={20}/></div><div className="qa-label">Record SBA</div></div>
+        <div className="qa-btn"><div className="qa-icon" style={{background:'#fff8e1'}}><Icon n="attendance" c="var(--gold)" s={20}/></div><div className="qa-label">Take Attendance</div></div>
+        <div className="qa-btn"><div className="qa-icon" style={{background:'#fdecea'}}><Icon n="report" c="var(--red)" s={20}/></div><div className="qa-label">Generate Report</div></div>
+      </div>
+
+      <div className="grid-2 mb-6">
+        <div className="card">
+          <div className="card-header"><span className="card-title">Performance Trend by Learning Area</span><span className="badge badge-green">Term 1 2025</span></div>
+          <div className="card-body">
+            <div className="chart-container">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={PERFORMANCE_TREND}>
+                  <XAxis dataKey="term" tick={{fontSize:11}} />
+                  <YAxis domain={[60,100]} tick={{fontSize:11}} />
+                  <Tooltip />
+                  <Legend iconSize={10} wrapperStyle={{fontSize:11}} />
+                  <Line type="monotone" dataKey="Math" stroke="#1a73e8" strokeWidth={2} dot={{r:4}} />
+                  <Line type="monotone" dataKey="English" stroke="#0a7c4b" strokeWidth={2} dot={{r:4}} />
+                  <Line type="monotone" dataKey="Science" stroke="#c8860a" strokeWidth={2} dot={{r:4}} />
+                  <Line type="monotone" dataKey="Kiswahili" stroke="#c2185b" strokeWidth={2} dot={{r:4}} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-header"><span className="card-title">Student Pathway Distribution</span><span className="badge badge-blue">2025</span></div>
+          <div className="card-body">
+            <div className="chart-container">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={PATHWAY_DIST} cx="50%" cy="50%" innerRadius={55} outerRadius={95} paddingAngle={3} dataKey="value">
+                    {PATHWAY_DIST.map((e,i)=><Cell key={i} fill={e.color}/>)}
+                  </Pie>
+                  <Tooltip />
+                  <Legend iconSize={10} wrapperStyle={{fontSize:11}} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid-2 mb-6">
+        <div className="card">
+          <div className="card-header"><span className="card-title">CBC Core Competencies – School Average</span></div>
+          <div className="card-body">
+            {COMPETENCY_DATA.map(c=>(
+              <div className="comp-row" key={c.name}>
+                <div className="comp-label">{c.name}</div>
+                <div className="comp-bar"><div className={`comp-fill ${c.score>=80?'exceeding':c.score>=70?'meeting':c.score>=60?'approaching':'below'}`} style={{width:c.score+'%'}}/></div>
+                <div className="comp-pct">{c.score}%</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-header"><span className="card-title">Announcements & Notices</span><span className="badge badge-red">2 Urgent</span></div>
+          <div className="card-body" style={{padding:'12px 16px'}}>
+            {ANNOUNCEMENTS.slice(0,3).map(a=>(
+              <div className="announcement" key={a.id}>
+                <div className="ann-icon"><Icon n="announce" c="#fff" s={16}/></div>
+                <div>
+                  <div className="ann-title">{a.title}{a.urgent&&<span className="badge badge-red" style={{marginLeft:8,fontSize:10}}>Urgent</span>}</div>
+                  <div className="ann-body">{a.body.slice(0,90)}...</div>
+                  <div className="ann-date">{a.date}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="card mb-6">
+        <div className="card-header"><span className="card-title">Monthly Attendance Rate</span><span className="badge badge-green">98% Target</span></div>
+        <div className="card-body">
+          <div style={{height:200}}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={ATTENDANCE_MONTHLY}>
+                <XAxis dataKey="month" tick={{fontSize:11}} />
+                <YAxis domain={[80,100]} tick={{fontSize:11}} />
+                <Tooltip />
+                <Area type="monotone" dataKey="rate" stroke="#0a7c4b" fill="#e8f5ef" strokeWidth={2} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-header"><span className="card-title">Recent Students</span><button className="btn btn-outline btn-sm">View All</button></div>
+        <div className="table-wrap">
+          <table>
+            <thead><tr><th>Student</th><th>Grade</th><th>Pathway</th><th>Attendance</th><th>Fees</th></tr></thead>
+            <tbody>
+              {STUDENTS.slice(0,6).map(s=>(
+                <tr key={s.id}>
+                  <td><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={s.name}/><span style={{fontWeight:600}}>{s.name}</span></div></td>
+                  <td><span className="badge badge-gray">{s.grade}</span></td>
+                  <td><PathwayBadge p={s.pathway}/></td>
+                  <td><div style={{display:'flex',alignItems:'center',gap:8}}><div className="progress" style={{width:60,height:6}}><div className="progress-bar" style={{width:s.attendance+'%',background:s.attendance>=90?'var(--green)':s.attendance>=80?'var(--gold)':'var(--red)'}}/></div><span style={{fontSize:12,fontWeight:600}}>{s.attendance}%</span></div></td>
+                  <td><FeesBadge status={s.fees}/></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// STUDENTS PAGE
+const StudentsPage = () => {
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [showModal, setShowModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [activeTab, setActiveTab] = useState('list');
+
+  const filtered = STUDENTS.filter(s => {
+    const m = s.name.toLowerCase().includes(search.toLowerCase()) || s.grade.toLowerCase().includes(search.toLowerCase());
+    if(filter==='all') return m;
+    return m && s.pathway.toLowerCase().includes(filter.toLowerCase());
+  });
+
+  if(selectedStudent) return <StudentProfile student={selectedStudent} onBack={()=>setSelectedStudent(null)}/>;
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+        <div><div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>Student Management</div><div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>CBC-aligned student records & profiles</div></div>
+        <button className="btn btn-primary" onClick={()=>setShowModal(true)}><Icon n="plus" s={15}/> Register Student</button>
+      </div>
+
+      <div className="stat-grid" style={{gridTemplateColumns:'repeat(4,1fr)',marginBottom:20}}>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f5ef'}}><Icon n="students" c="var(--green)" s={20}/></div><div><div className="stat-label">Total</div><div className="stat-value">892</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f0fe'}}><Icon n="grade" c="var(--blue)" s={20}/></div><div><div className="stat-label">Junior Sec.</div><div className="stat-value">380</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fff8e1'}}><Icon n="pathway" c="var(--gold)" s={20}/></div><div><div className="stat-label">Senior Sec.</div><div className="stat-value">512</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fdecea'}}><Icon n="alert" c="var(--red)" s={20}/></div><div><div className="stat-label">Fee Arrears</div><div className="stat-value">47</div></div></div>
+      </div>
+
+      <div className="card">
+        <div className="card-header">
+          <div style={{display:'flex',gap:12,flex:1,flexWrap:'wrap'}}>
+            <div className="search-box" style={{minWidth:220}}><Icon n="search" s={14}/><input placeholder="Search students…" value={search} onChange={e=>setSearch(e.target.value)}/></div>
+            <select className="form-control" style={{width:'auto'}} value={filter} onChange={e=>setFilter(e.target.value)}>
+              <option value="all">All Pathways</option>
+              <option value="Junior">Junior Secondary</option>
+              <option value="STEM">STEM</option>
+              <option value="Arts">Arts & Sports</option>
+              <option value="Social">Social Sciences</option>
+            </select>
+          </div>
+          <span style={{fontSize:12,color:'var(--gray-500)',marginLeft:8}}>{filtered.length} students</span>
+        </div>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Student</th><th>Adm. No.</th><th>Grade</th><th>Pathway</th><th>Attendance</th><th>CBC Level</th><th>Fees</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              {filtered.map(s=>(
+                <tr key={s.id}>
+                  <td><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={s.name}/><div><div style={{fontWeight:600,fontSize:13.5}}>{s.name}</div><div style={{fontSize:11.5,color:'var(--gray-500)'}}>{s.gender==='F'?'Female':'Male'}</div></div></div></td>
+                  <td><span style={{fontFamily:'monospace',fontSize:12,background:'var(--gray-100)',padding:'2px 6px',borderRadius:4}}>{s.id}</span></td>
+                  <td><span className="badge badge-gray">{s.grade}</span></td>
+                  <td><PathwayBadge p={s.pathway}/></td>
+                  <td>
+                    <div style={{display:'flex',alignItems:'center',gap:6}}>
+                      <div className="progress" style={{width:50,height:6}}><div className="progress-bar" style={{width:s.attendance+'%',background:s.attendance>=90?'var(--green)':s.attendance>=80?'var(--gold)':'var(--red)'}}/></div>
+                      <span style={{fontSize:12,fontWeight:600,color:s.attendance>=90?'var(--green)':s.attendance>=80?'var(--gold)':'var(--red)'}}>{s.attendance}%</span>
+                    </div>
+                  </td>
+                  <td><LevelBadge level={s.gpa>=3.8?'Exceeding':s.gpa>=3.0?'Meeting':s.gpa>=2.5?'Approaching':'Below'}/></td>
+                  <td><FeesBadge status={s.fees}/></td>
+                  <td>
+                    <div style={{display:'flex',gap:4}}>
+                      <button className="btn-icon" title="View Profile" onClick={()=>setSelectedStudent(s)}><Icon n="eye" s={14}/></button>
+                      <button className="btn-icon" title="Edit"><Icon n="edit" s={14}/></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {showModal && (
+        <div className="modal-overlay" onClick={()=>setShowModal(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div className="modal-header">
+              <span className="modal-title">Register New Student</span>
+              <button className="btn-icon" onClick={()=>setShowModal(false)}><Icon n="x" s={16}/></button>
+            </div>
+            <div className="modal-body">
+              <div className="grid-2">
+                <div className="form-group"><label className="form-label">First Name</label><input className="form-control" placeholder="e.g. Amina"/></div>
+                <div className="form-group"><label className="form-label">Last Name</label><input className="form-control" placeholder="e.g. Osei"/></div>
+                <div className="form-group"><label className="form-label">Date of Birth</label><input className="form-control" type="date"/></div>
+                <div className="form-group"><label className="form-label">Gender</label><select className="form-control"><option>Female</option><option>Male</option></select></div>
+                <div className="form-group"><label className="form-label">Grade</label><select className="form-control">{['Grade 7','Grade 8','Grade 9','Grade 10','Grade 11','Grade 12'].map(g=><option key={g}>{g}</option>)}</select></div>
+                <div className="form-group"><label className="form-label">Stream</label><select className="form-control"><option>A</option><option>B</option><option>C</option></select></div>
+                <div className="form-group"><label className="form-label">Pathway</label><select className="form-control"><option>Junior</option><option>STEM</option><option>Arts & Sports</option><option>Social Sciences</option></select></div>
+                <div className="form-group"><label className="form-label">Guardian Name</label><input className="form-control" placeholder="Full name"/></div>
+              </div>
+              <div className="form-group"><label className="form-label">Guardian Phone</label><input className="form-control" placeholder="+254 7XX XXX XXX"/></div>
+              <div className="form-group"><label className="form-label">Medical Notes (optional)</label><textarea className="form-control" rows={2} placeholder="Any medical conditions or special needs…"/></div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-outline" onClick={()=>setShowModal(false)}>Cancel</button>
+              <button className="btn btn-primary">Register Student</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// STUDENT PROFILE
+const StudentProfile = ({student, onBack}) => {
+  const [tab, setTab] = useState('overview');
+  const compScores = [82,74,78,70,85,66,72];
+  const attData = [{month:'Sep',p:20,a:1},{month:'Oct',p:22,a:0},{month:'Nov',p:18,a:2},{month:'Dec',p:19,a:1},{month:'Jan',p:21,a:0}];
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:24}}>
+        <button className="btn btn-outline btn-sm" onClick={onBack}>← Back</button>
+        <div style={{fontSize:18,fontWeight:800,fontFamily:'Sora,sans-serif'}}>Student Profile</div>
+      </div>
+      <div className="card mb-6" style={{background:'linear-gradient(135deg,#063d24,#0a5c38)',color:'#fff',border:'none'}}>
+        <div className="card-body">
+          <div style={{display:'flex',alignItems:'center',gap:20}}>
+            <div style={{width:72,height:72,borderRadius:'50%',background:avatarColor(student.name),display:'flex',alignItems:'center',justifyContent:'center',fontSize:28,fontWeight:700,color:'#fff',flexShrink:0}}>{initials(student.name)}</div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>{student.name}</div>
+              <div style={{fontSize:13,color:'rgba(255,255,255,.65)',marginTop:4}}>Adm. No: {student.id} · {student.grade} {student.stream} · {student.pathway==='Junior'?'Junior Secondary':student.pathway+' Pathway'}</div>
+              <div style={{display:'flex',gap:12,marginTop:12,flexWrap:'wrap'}}>
+                <span style={{background:'rgba(255,255,255,.15)',borderRadius:20,padding:'3px 12px',fontSize:12,fontWeight:700}}>DOB: {student.dob}</span>
+                <span style={{background:'rgba(255,255,255,.15)',borderRadius:20,padding:'3px 12px',fontSize:12,fontWeight:700}}>Guardian: {student.guardian}</span>
+                <span style={{background:'rgba(255,255,255,.15)',borderRadius:20,padding:'3px 12px',fontSize:12,fontWeight:700}}>{student.phone}</span>
+              </div>
+            </div>
+            <div style={{textAlign:'center'}}>
+              <div style={{fontSize:36,fontWeight:800,fontFamily:'Sora,sans-serif'}}>{student.attendance}%</div>
+              <div style={{fontSize:11,color:'rgba(255,255,255,.6)'}}>ATTENDANCE</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="tabs">
+        {['overview','assessments','attendance','competencies','fees'].map(t=><div key={t} className={`tab${tab===t?' active':''}`} onClick={()=>setTab(t)} style={{textTransform:'capitalize'}}>{t}</div>)}
+      </div>
+
+      {tab==='overview' && (
+        <div className="grid-2">
+          <div className="card"><div className="card-header"><span className="card-title">CBC Competency Profile</span></div><div className="card-body">
+            {CBC_COMPETENCIES.map((c,i)=>(
+              <div className="comp-row" key={c}><div className="comp-label" style={{fontSize:12}}>{c}</div><div className="comp-bar"><div className="comp-fill meeting" style={{width:compScores[i]+'%',background:compScores[i]>=80?'linear-gradient(90deg,#0a7c4b,#1aab6d)':compScores[i]>=70?'linear-gradient(90deg,#1a73e8,#4fa3ff)':'linear-gradient(90deg,#c8860a,#e9a020)'}}/></div><div className="comp-pct">{compScores[i]}%</div></div>
+            ))}
+          </div></div>
+          <div>
+            <div className="card mb-4"><div className="card-header"><span className="card-title">Performance by Learning Area</span></div><div className="card-body">
+              <div style={{height:180}}><ResponsiveContainer width="100%" height="100%"><BarChart data={[{area:'Math',score:85},{area:'English',score:78},{area:'Science',score:90},{area:'Kisw.',score:75},{area:'Comp.',score:82}]}><XAxis dataKey="area" tick={{fontSize:11}}/><YAxis domain={[0,100]} tick={{fontSize:11}}/><Tooltip/><Bar dataKey="score" fill="var(--green)" radius={[4,4,0,0]}/></BarChart></ResponsiveContainer></div>
+            </div></div>
+            <div className="card"><div className="card-header"><span className="card-title">Quick Info</span></div><div className="card-body">
+              <table style={{width:'100%',fontSize:13}}>
+                <tbody>
+                  {[['Grade',student.grade],['Stream',student.stream],['Pathway',student.pathway],['Fee Status',student.fees],['Gender',student.gender==='F'?'Female':'Male']].map(([k,v])=>(
+                    <tr key={k}><td style={{color:'var(--gray-500)',padding:'7px 0'}}>{k}</td><td style={{textAlign:'right',fontWeight:600}}>{v}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            </div></div>
+          </div>
+        </div>
+      )}
+      {tab==='assessments' && (
+        <div className="card"><div className="card-header"><span className="card-title">Assessment Records</span><button className="btn btn-primary btn-sm">+ Add Assessment</button></div>
+        <div className="table-wrap"><table><thead><tr><th>Learning Area</th><th>Type</th><th>Score</th><th>CBC Level</th><th>Date</th><th>Teacher</th></tr></thead><tbody>
+          {ASSESSMENTS_DATA.filter(a=>a.student===student.name).map(a=>(
+            <tr key={a.id}><td style={{fontWeight:600}}>{a.area}</td><td><span className="badge badge-gray">{a.type}</span></td><td><strong>{a.score}</strong>/100</td><td><LevelBadge level={a.level}/></td><td style={{color:'var(--gray-500)'}}>{a.date}</td><td>{a.teacher}</td></tr>
+          ))}
+          {ASSESSMENTS_DATA.filter(a=>a.student===student.name).length===0&&<tr><td colSpan={6} style={{textAlign:'center',color:'var(--gray-400)',padding:24}}>No assessments recorded yet</td></tr>}
+        </tbody></table></div></div>
+      )}
+      {tab==='attendance' && (
+        <div className="grid-2">
+          <div className="card"><div className="card-header"><span className="card-title">Monthly Attendance</span></div><div className="card-body">
+            <div style={{height:200}}><ResponsiveContainer width="100%" height="100%"><BarChart data={attData}><XAxis dataKey="month" tick={{fontSize:11}}/><YAxis tick={{fontSize:11}}/><Tooltip/><Bar dataKey="p" name="Present" fill="var(--green)" radius={[4,4,0,0]}/><Bar dataKey="a" name="Absent" fill="var(--red)" radius={[4,4,0,0]}/></BarChart></ResponsiveContainer></div>
+          </div></div>
+          <div className="card"><div className="card-header"><span className="card-title">Term 1 Summary</span></div><div className="card-body">
+            {[['Days Present','94'],['Days Absent','6'],['Attendance Rate',student.attendance+'%'],['Status',student.attendance>=90?'Excellent':student.attendance>=80?'Good':'Needs Attention']].map(([k,v])=>(
+              <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid var(--gray-100)'}}><span style={{color:'var(--gray-600)',fontSize:13}}>{k}</span><span style={{fontWeight:700,color:k==='Status'?(student.attendance>=90?'var(--green)':student.attendance>=80?'var(--gold)':'var(--red)'):''}}>{v}</span></div>
+            ))}
+          </div></div>
+        </div>
+      )}
+      {tab==='competencies' && (
+        <div className="card"><div className="card-header"><span className="card-title">CBC Core Competency Assessment</span><button className="btn btn-outline btn-sm"><Icon n="download" s={13}/> Export Report</button></div><div className="card-body">
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+            {CBC_COMPETENCIES.map((c,i)=>{
+              const s=compScores[i];const l=s>=80?'Exceeding':s>=70?'Meeting':s>=60?'Approaching':'Below';
+              return <div key={c} style={{border:'1px solid var(--gray-200)',borderRadius:10,padding:14}}>
+                <div style={{fontSize:12.5,fontWeight:700,color:'var(--gray-800)',marginBottom:8}}>{c}</div>
+                <div className="comp-bar" style={{marginBottom:8}}><div className="comp-fill" style={{width:s+'%',background:s>=80?'linear-gradient(90deg,#0a7c4b,#1aab6d)':s>=70?'linear-gradient(90deg,#1a73e8,#4fa3ff)':'linear-gradient(90deg,#c8860a,#e9a020)'}}/></div>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}><LevelBadge level={l}/><span style={{fontSize:13,fontWeight:800}}>{s}%</span></div>
+              </div>;
+            })}
+          </div>
+        </div></div>
+      )}
+      {tab==='fees' && (
+        <div className="card"><div className="card-header"><span className="card-title">Fee Statement</span><button className="btn btn-primary btn-sm">Record Payment</button></div><div className="card-body">
+          <div style={{background:'var(--gray-50)',borderRadius:10,padding:16,marginBottom:16}}>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><span style={{color:'var(--gray-500)',fontSize:13}}>Term 1 2025 Fees</span><span style={{fontWeight:800,fontSize:18,fontFamily:'Sora,sans-serif'}}>Ksh {student.grade.includes('7')?'16,500':student.grade.includes('8')||student.grade.includes('9')?'18,500':'22,000'}</span></div>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><span style={{color:'var(--gray-500)',fontSize:13}}>Amount Paid</span><span style={{fontWeight:700,color:'var(--green)',fontSize:15}}>Ksh {student.fees==='paid'?(student.grade.includes('7')?'16,500':student.grade.includes('8')||student.grade.includes('9')?'18,500':'22,000'):student.fees==='partial'?'10,000':'0'}</span></div>
+            <div style={{display:'flex',justifyContent:'space-between'}}><span style={{color:'var(--gray-500)',fontSize:13}}>Balance</span><span style={{fontWeight:700,color:student.fees==='paid'?'var(--green)':'var(--red)',fontSize:15}}>Ksh {student.fees==='paid'?'0':student.fees==='partial'?'8,500':'22,000'}</span></div>
+          </div>
+          <div style={{display:'flex',justifyContent:'center',marginTop:8}}><FeesBadge status={student.fees}/></div>
+        </div></div>
+      )}
+    </div>
+  );
+};
+
+// TEACHERS PAGE
+const TeachersPage = () => {
+  const [search, setSearch] = useState('');
+  const filtered = TEACHERS.filter(t=>t.name.toLowerCase().includes(search.toLowerCase())||t.subject.toLowerCase().includes(search.toLowerCase()));
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+        <div><div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>Teaching Staff</div><div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>Manage teachers & learning area assignments</div></div>
+        <button className="btn btn-primary"><Icon n="plus" s={15}/> Add Teacher</button>
+      </div>
+      <div className="stat-grid" style={{gridTemplateColumns:'repeat(4,1fr)',marginBottom:20}}>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f5ef'}}><Icon n="teacher" c="var(--green)" s={20}/></div><div><div className="stat-label">Total Staff</div><div className="stat-value">38</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f0fe'}}><Icon n="academic" c="var(--blue)" s={20}/></div><div><div className="stat-label">Learning Areas</div><div className="stat-value">12</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fff8e1'}}><Icon n="grade" c="var(--gold)" s={20}/></div><div><div className="stat-label">Avg Experience</div><div className="stat-value">7.4y</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fdecea'}}><Icon n="alert" c="var(--red)" s={20}/></div><div><div className="stat-label">Vacancies</div><div className="stat-value">3</div></div></div>
+      </div>
+      <div className="card">
+        <div className="card-header">
+          <div className="search-box"><Icon n="search" s={14}/><input placeholder="Search teachers…" value={search} onChange={e=>setSearch(e.target.value)}/></div>
+        </div>
+        <div className="table-wrap">
+          <table>
+            <thead><tr><th>Teacher</th><th>Learning Area</th><th>Classes</th><th>Experience</th><th>Contact</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              {filtered.map(t=>(
+                <tr key={t.id}>
+                  <td><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={t.name}/><div><div style={{fontWeight:600,fontSize:13.5}}>{t.name}</div><div style={{fontSize:11.5,color:'var(--gray-500)'}}>{t.id}</div></div></div></td>
+                  <td><span className="badge badge-blue">{t.subject}</span></td>
+                  <td><div style={{display:'flex',gap:4,flexWrap:'wrap'}}>{t.classes.map(c=><span key={c} className="badge badge-gray">{c}</span>)}</div></td>
+                  <td><span style={{fontWeight:600}}>{t.experience}</span> <span style={{color:'var(--gray-400)',fontSize:12}}>yrs</span></td>
+                  <td><div style={{fontSize:12}}><div style={{display:'flex',alignItems:'center',gap:4}}><Icon n="mail" s={11} c="var(--gray-400)"/> {t.email}</div><div style={{display:'flex',alignItems:'center',gap:4,marginTop:2}}><Icon n="phone" s={11} c="var(--gray-400)"/> {t.phone}</div></div></td>
+                  <td><span className="badge badge-green">Active</span></td>
+                  <td><div style={{display:'flex',gap:4}}><button className="btn-icon"><Icon n="eye" s={14}/></button><button className="btn-icon"><Icon n="edit" s={14}/></button></div></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ASSESSMENTS PAGE
+const AssessmentsPage = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [tab, setTab] = useState('records');
+  const levelCounts = {Exceeding:0,Meeting:0,Approaching:0,Below:0};
+  ASSESSMENTS_DATA.forEach(a=>levelCounts[a.level]=(levelCounts[a.level]||0)+1);
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+        <div><div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>CBC Assessments & SBA</div><div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>School-Based Assessment · Projects · Portfolios</div></div>
+        <button className="btn btn-primary" onClick={()=>setShowModal(true)}><Icon n="plus" s={15}/> Record Assessment</button>
+      </div>
+      <div className="stat-grid" style={{gridTemplateColumns:'repeat(4,1fr)',marginBottom:20}}>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f5ef'}}><Icon n="check" c="var(--green)" s={20}/></div><div><div className="stat-label">Exceeding</div><div className="stat-value" style={{color:'var(--green)'}}>{levelCounts.Exceeding}</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f0fe'}}><Icon n="trending" c="var(--blue)" s={20}/></div><div><div className="stat-label">Meeting</div><div className="stat-value" style={{color:'var(--blue)'}}>{levelCounts.Meeting}</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fff8e1'}}><Icon n="alert" c="var(--gold)" s={20}/></div><div><div className="stat-label">Approaching</div><div className="stat-value" style={{color:'var(--gold)'}}>{levelCounts.Approaching}</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fdecea'}}><Icon n="alert" c="var(--red)" s={20}/></div><div><div className="stat-label">Below Exp.</div><div className="stat-value" style={{color:'var(--red)'}}>{levelCounts.Below||0}</div></div></div>
+      </div>
+      <div className="tabs">
+        {['records','competencies','sba-rubric'].map(t=><div key={t} className={`tab${tab===t?' active':''}`} onClick={()=>setTab(t)}>{t==='records'?'Assessment Records':t==='competencies'?'Competency Tracker':'SBA Rubric Guide'}</div>)}
+      </div>
+      {tab==='records' && (
+        <div className="card">
+          <div className="card-header"><span className="card-title">Assessment Records</span><button className="btn btn-outline btn-sm"><Icon n="download" s={13}/> Export</button></div>
+          <div className="table-wrap">
+            <table>
+              <thead><tr><th>Student</th><th>Learning Area</th><th>Type</th><th>Score</th><th>CBC Level</th><th>Term</th><th>Date</th><th>Teacher</th></tr></thead>
+              <tbody>
+                {ASSESSMENTS_DATA.map(a=>(
+                  <tr key={a.id}>
+                    <td><div style={{display:'flex',alignItems:'center',gap:8}}><Avatar name={a.student} size={28}/><span style={{fontWeight:600,fontSize:13}}>{a.student}</span></div></td>
+                    <td>{a.area}</td>
+                    <td><span className="badge badge-purple">{a.type}</span></td>
+                    <td><div style={{display:'flex',alignItems:'center',gap:6}}><div className="progress" style={{width:40,height:5}}><div className="progress-bar" style={{width:a.score+'%',background:a.score>=80?'var(--green)':a.score>=70?'var(--blue)':'var(--gold)'}}/></div><strong>{a.score}</strong></div></td>
+                    <td><LevelBadge level={a.level}/></td>
+                    <td><span className="badge badge-gray">{a.term}</span></td>
+                    <td style={{color:'var(--gray-500)',fontSize:12}}>{a.date}</td>
+                    <td style={{fontSize:12}}>{a.teacher}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      {tab==='competencies' && (
+        <div className="grid-2">
+          <div className="card"><div className="card-header"><span className="card-title">School-Wide Competency Levels</span></div><div className="card-body">
+            {COMPETENCY_DATA.map(c=>(
+              <div key={c.name} style={{marginBottom:14}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}><span style={{fontSize:13,fontWeight:600,color:'var(--gray-700)'}}>{c.name}</span><div style={{display:'flex',gap:6,alignItems:'center'}}><LevelBadge level={c.level}/><span style={{fontSize:12,fontWeight:700}}>{c.score}%</span></div></div>
+                <div className="comp-bar"><div className="comp-fill" style={{width:c.score+'%',background:c.score>=80?'linear-gradient(90deg,#0a7c4b,#1aab6d)':c.score>=70?'linear-gradient(90deg,#1a73e8,#4fa3ff)':'linear-gradient(90deg,#c8860a,#e9a020)'}}/></div>
+              </div>
+            ))}
+          </div></div>
+          <div className="card"><div className="card-header"><span className="card-title">Competency Level Distribution</span></div><div className="card-body">
+            <div style={{height:220}}><ResponsiveContainer width="100%" height="100%"><BarChart data={[{level:'Exceeding',count:312},{level:'Meeting',count:445},{level:'Approaching',count:98},{level:'Below',count:37}]}><XAxis dataKey="level" tick={{fontSize:11}}/><YAxis tick={{fontSize:11}}/><Tooltip/><Bar dataKey="count" radius={[4,4,0,0]}><Cell fill="#0a7c4b"/><Cell fill="#1a73e8"/><Cell fill="#c8860a"/><Cell fill="#d93025"/></Bar></BarChart></ResponsiveContainer></div>
+          </div></div>
+        </div>
+      )}
+      {tab==='sba-rubric' && (
+        <div className="card"><div className="card-header"><span className="card-title">CBC SBA Rubric Guide</span><span className="badge badge-blue">KNEC-Aligned</span></div><div className="card-body">
+          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:20}}>
+            {[{level:'Exceeding Expectations',range:'80–100%',desc:'Learner demonstrates all competencies beyond required level with exceptional depth and application.',color:'var(--green)',bg:'var(--green-l)'},{level:'Meeting Expectations',range:'60–79%',desc:'Learner consistently demonstrates all required competencies at the expected standard.',color:'var(--blue)',bg:'var(--blue-l)'},{level:'Approaching Expectations',range:'40–59%',desc:'Learner shows partial mastery of competencies; requires guided support to meet standard.',color:'var(--gold)',bg:'var(--gold-l)'},{level:'Below Expectations',range:'0–39%',desc:'Learner has not yet demonstrated the required competencies; intensive support needed.',color:'var(--red)',bg:'var(--red-l)'}].map(r=>(
+              <div key={r.level} style={{background:r.bg,border:`2px solid ${r.color}`,borderRadius:10,padding:16}}>
+                <div style={{fontSize:13,fontWeight:800,color:r.color,marginBottom:4}}>{r.level}</div>
+                <div style={{fontSize:20,fontWeight:800,fontFamily:'Sora,sans-serif',color:r.color,marginBottom:8}}>{r.range}</div>
+                <div style={{fontSize:12,color:'var(--gray-700)',lineHeight:1.5}}>{r.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{background:'var(--gray-50)',borderRadius:10,padding:16}}>
+            <div style={{fontWeight:700,marginBottom:8,fontSize:13}}>Assessment Types (CBC)</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+              {[['SBA – School Based Assessment','Continuous classroom-based evaluation'],['Project Work','Research & applied project assessment'],['Portfolio','Collection of learner\'s work samples'],['Practical Work','Hands-on skills demonstration'],['Oral Assessment','Spoken language & presentation skills'],['Performance Task','Real-world competency application']].map(([t,d])=>(
+                <div key={t} style={{background:'#fff',borderRadius:8,padding:'10px 12px',border:'1px solid var(--gray-200)'}}>
+                  <div style={{fontWeight:700,fontSize:12.5,color:'var(--gray-800)'}}>{t}</div>
+                  <div style={{fontSize:12,color:'var(--gray-500)',marginTop:2}}>{d}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div></div>
+      )}
+      {showModal && (
+        <div className="modal-overlay" onClick={()=>setShowModal(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div className="modal-header"><span className="modal-title">Record CBC Assessment</span><button className="btn-icon" onClick={()=>setShowModal(false)}><Icon n="x" s={16}/></button></div>
+            <div className="modal-body">
+              <div className="form-group"><label className="form-label">Student</label><select className="form-control">{STUDENTS.map(s=><option key={s.id}>{s.name} – {s.grade}</option>)}</select></div>
+              <div className="grid-2">
+                <div className="form-group"><label className="form-label">Learning Area</label><select className="form-control">{LEARNING_AREAS.map(l=><option key={l.id}>{l.name}</option>)}</select></div>
+                <div className="form-group"><label className="form-label">Assessment Type</label><select className="form-control"><option>SBA</option><option>Project</option><option>Portfolio</option><option>Practical</option><option>Oral</option><option>Performance Task</option></select></div>
+                <div className="form-group"><label className="form-label">Score (/100)</label><input className="form-control" type="number" min={0} max={100} placeholder="e.g. 78"/></div>
+                <div className="form-group"><label className="form-label">Term</label><select className="form-control"><option>Term 1</option><option>Term 2</option><option>Term 3</option></select></div>
+                <div className="form-group"><label className="form-label">Date</label><input className="form-control" type="date"/></div>
+                <div className="form-group"><label className="form-label">CBC Level</label><select className="form-control"><option>Exceeding Expectations</option><option>Meeting Expectations</option><option>Approaching Expectations</option><option>Below Expectations</option></select></div>
+              </div>
+              <div className="form-group"><label className="form-label">Teacher Comments</label><textarea className="form-control" rows={3} placeholder="Qualitative observations and recommendations…"/></div>
+            </div>
+            <div className="modal-footer"><button className="btn btn-outline" onClick={()=>setShowModal(false)}>Cancel</button><button className="btn btn-primary">Save Assessment</button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// TIMETABLE PAGE
+const TimetablePage = () => {
+  const [selectedClass, setSelectedClass] = useState('7A');
+  const days = ['Mon','Tue','Wed','Thu','Fri'];
+  const rows = TIMETABLE['7A'];
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+        <div><div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>Timetable Management</div><div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>Class schedules & teacher allocation</div></div>
+        <div style={{display:'flex',gap:10}}>
+          <select className="form-control" style={{width:'auto'}} value={selectedClass} onChange={e=>setSelectedClass(e.target.value)}>
+            {['7A','7B','7C','8A','8B','9A','9B','10A','10B','11A','11B','12A','12B'].map(c=><option key={c}>Grade {c}</option>)}
+          </select>
+          <button className="btn btn-primary"><Icon n="download" s={14}/> Export PDF</button>
+        </div>
+      </div>
+      <div className="card">
+        <div className="card-header"><span className="card-title">Grade {selectedClass} – Term 1 Timetable 2025</span><span className="badge badge-green">CBC Schedule</span></div>
+        <div className="card-body" style={{overflowX:'auto'}}>
+          <div className="tt-grid" style={{minWidth:700}}>
+            <div className="tt-head">Time</div>
+            {days.map(d=><div key={d} className="tt-head">{d}</div>)}
+            {rows.map((row,i)=>(
+              <React.Fragment key={i}>
+                <div className="tt-time">{row.period}</div>
+                {days.map(d=>{
+                  const c=row[d];
+                  if(!c) return <div key={d} className="tt-empty"/>;
+                  if(c.sub==='BREAK'||c.sub==='LUNCH'||c.sub==='Assembly') return <div key={d} className="tt-cell" style={{background:c.color,color:c.tc,fontStyle:'italic'}}>{c.sub}</div>;
+                  return <div key={d} className="tt-cell" style={{background:c.color,color:c.tc}}><div style={{fontWeight:700,fontSize:12}}>{c.sub}</div>{c.teacher&&<div style={{fontSize:10.5,marginTop:2,opacity:.75}}>{c.teacher}</div>}</div>;
+                })}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="card mt-4"><div className="card-header"><span className="card-title">Learning Area Legend</span></div><div className="card-body">
+        <div style={{display:'flex',flexWrap:'wrap',gap:10}}>
+          {[['#e8f0fe','#1a73e8','Mathematics'],['#fce8f3','#c2185b','English'],['#fff8e1','#f57f17','Kiswahili'],['#f3e8f7','#7b2d8b','Integrated Science'],['#e8f5e9','#2e7d32','Social Studies'],['#fdecea','#d93025','Pre-Technical Studies'],['#fff3e0','#e65100','Creative Arts'],['#e8eaed','#3c4043','Computer Science'],['#e3f2fd','#1565c0','Physical Education']].map(([bg,tc,label])=>(
+            <div key={label} style={{background:bg,color:tc,borderRadius:6,padding:'4px 12px',fontSize:12,fontWeight:700}}>{label}</div>
+          ))}
+        </div>
+      </div></div>
+    </div>
+  );
+};
+
+// FINANCE PAGE
+const FinancePage = () => {
+  const totalExpected = PAYMENTS.reduce((s,p)=>s+p.amount,0);
+  const totalPaid = PAYMENTS.reduce((s,p)=>s+p.paid,0);
+  const pct = Math.round(totalPaid/totalExpected*100);
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+        <div><div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>Finance & Fee Management</div><div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>Term 1 2025 fee collection status</div></div>
+        <button className="btn btn-primary"><Icon n="plus" s={15}/> Record Payment</button>
+      </div>
+      <div className="stat-grid" style={{gridTemplateColumns:'repeat(4,1fr)',marginBottom:24}}>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f5ef'}}><Icon n="finance" c="var(--green)" s={20}/></div><div><div className="stat-label">Total Expected</div><div className="stat-value" style={{fontSize:20}}>Ksh {(totalExpected).toLocaleString()}</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f0fe'}}><Icon n="check" c="var(--blue)" s={20}/></div><div><div className="stat-label">Collected</div><div className="stat-value" style={{fontSize:20,color:'var(--green)'}}>Ksh {totalPaid.toLocaleString()}</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fdecea'}}><Icon n="alert" c="var(--red)" s={20}/></div><div><div className="stat-label">Outstanding</div><div className="stat-value" style={{fontSize:20,color:'var(--red)'}}>Ksh {(totalExpected-totalPaid).toLocaleString()}</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fff8e1'}}><Icon n="trending" c="var(--gold)" s={20}/></div><div><div className="stat-label">Collection Rate</div><div className="stat-value" style={{color:pct>=80?'var(--green)':pct>=60?'var(--gold)':'var(--red)'}}>{pct}%</div></div></div>
+      </div>
+      <div className="card mb-6"><div className="card-header"><span className="card-title">Overall Collection Progress – Term 1 2025</span></div><div className="card-body">
+        <div style={{display:'flex',justifyContent:'space-between',marginBottom:8,fontSize:13}}><span style={{color:'var(--gray-500)'}}>Ksh {totalPaid.toLocaleString()} of Ksh {totalExpected.toLocaleString()}</span><span style={{fontWeight:700,color:pct>=80?'var(--green)':'var(--gold)'}}>{pct}%</span></div>
+        <div className="progress" style={{height:14}}><div className="progress-bar" style={{width:pct+'%',background:'linear-gradient(90deg,#0a7c4b,#1aab6d)'}}/></div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12,marginTop:16}}>
+          {[['Fully Paid',PAYMENTS.filter(p=>p.status==='paid').length,'var(--green)'],['Partial',PAYMENTS.filter(p=>p.status==='partial').length,'var(--gold)'],['Arrears',PAYMENTS.filter(p=>p.status==='arrears').length,'var(--red)']].map(([l,c,col])=>(
+            <div key={l} style={{textAlign:'center',padding:12,background:'var(--gray-50)',borderRadius:10}}><div style={{fontSize:26,fontWeight:800,color:col,fontFamily:'Sora,sans-serif'}}>{c}</div><div style={{fontSize:12,color:'var(--gray-500)',marginTop:2}}>{l}</div></div>
+          ))}
+        </div>
+      </div></div>
+      <div className="card">
+        <div className="card-header"><span className="card-title">Student Fee Records</span><button className="btn btn-outline btn-sm"><Icon n="download" s={13}/> Export</button></div>
+        <div className="table-wrap">
+          <table>
+            <thead><tr><th>Student</th><th>Grade</th><th>Term</th><th>Expected</th><th>Paid</th><th>Balance</th><th>Method</th><th>Ref.</th><th>Status</th></tr></thead>
+            <tbody>
+              {PAYMENTS.map(p=>(
+                <tr key={p.id}>
+                  <td style={{fontWeight:600}}>{p.student}</td>
+                  <td><span className="badge badge-gray">{p.grade}</span></td>
+                  <td style={{fontSize:12}}>{p.term}</td>
+                  <td>Ksh {p.amount.toLocaleString()}</td>
+                  <td style={{color:'var(--green)',fontWeight:600}}>Ksh {p.paid.toLocaleString()}</td>
+                  <td style={{color:p.balance>0?'var(--red)':'var(--green)',fontWeight:600}}>Ksh {p.balance.toLocaleString()}</td>
+                  <td style={{fontSize:12}}>{p.method}</td>
+                  <td><span style={{fontFamily:'monospace',fontSize:11,background:'var(--gray-100)',padding:'2px 5px',borderRadius:4}}>{p.ref}</span></td>
+                  <td><FeesBadge status={p.status}/></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ANALYTICS PAGE
+const AnalyticsPage = () => (
+  <div>
+    <div style={{marginBottom:24}}>
+      <div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>Analytics & Reports</div>
+      <div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>CBC performance insights & data-driven decision support</div>
+    </div>
+    <div className="grid-2 mb-6">
+      <div className="card"><div className="card-header"><span className="card-title">Grade-wise Average Scores – Term 1 2025</span></div><div className="card-body">
+        <div style={{height:220}}><ResponsiveContainer width="100%" height="100%"><BarChart data={[{grade:'Gr.7',avg:82},{grade:'Gr.8',avg:78},{grade:'Gr.9',avg:75},{grade:'Gr.10',avg:80},{grade:'Gr.11',avg:77},{grade:'Gr.12',avg:83}]}><XAxis dataKey="grade" tick={{fontSize:11}}/><YAxis domain={[60,100]} tick={{fontSize:11}}/><Tooltip/><Bar dataKey="avg" fill="var(--green)" radius={[4,4,0,0]}/></BarChart></ResponsiveContainer></div>
+      </div></div>
+      <div className="card"><div className="card-header"><span className="card-title">Pathway Performance Comparison</span></div><div className="card-body">
+        <div style={{height:220}}><ResponsiveContainer width="100%" height="100%"><BarChart data={[{pathway:'STEM',score:82},{pathway:'Arts & Sp.',score:79},{pathway:'Social Sc.',score:78},{pathway:'Junior',score:80}]}><XAxis dataKey="pathway" tick={{fontSize:11}}/><YAxis domain={[70,90]} tick={{fontSize:11}}/><Tooltip/><Bar dataKey="score" radius={[4,4,0,0]}><Cell fill="#1a73e8"/><Cell fill="#c2185b"/><Cell fill="#2e7d32"/><Cell fill="#f57f17"/></Bar></BarChart></ResponsiveContainer></div>
+      </div></div>
+    </div>
+    <div className="grid-2 mb-6">
+      <div className="card"><div className="card-header"><span className="card-title">Attendance Trend (Academic Year)</span></div><div className="card-body">
+        <div style={{height:200}}><ResponsiveContainer width="100%" height="100%"><AreaChart data={ATTENDANCE_MONTHLY}><XAxis dataKey="month" tick={{fontSize:11}}/><YAxis domain={[80,100]} tick={{fontSize:11}}/><Tooltip/><Area type="monotone" dataKey="rate" stroke="#1a73e8" fill="#e8f0fe" strokeWidth={2}/></AreaChart></ResponsiveContainer></div>
+      </div></div>
+      <div className="card"><div className="card-header"><span className="card-title">Gender Distribution by Pathway</span></div><div className="card-body">
+        <div style={{height:200}}><ResponsiveContainer width="100%" height="100%"><BarChart data={[{path:'STEM',m:120,f:100},{path:'Arts',m:55,f:85},{path:'Social',m:80,f:80},{path:'Junior',m:195,f:185}]}><XAxis dataKey="path" tick={{fontSize:11}}/><YAxis tick={{fontSize:11}}/><Tooltip/><Legend iconSize={10} wrapperStyle={{fontSize:11}}/><Bar dataKey="m" name="Male" fill="#1a73e8" stackId="a"/><Bar dataKey="f" name="Female" fill="#c2185b" stackId="a"/></BarChart></ResponsiveContainer></div>
+      </div></div>
+    </div>
+    <div className="card mb-6"><div className="card-header"><span className="card-title">Learning Area Performance Heatmap</span><button className="btn btn-outline btn-sm"><Icon n="download" s={13}/> Export PDF</button></div><div className="card-body">
+      <div style={{overflowX:'auto'}}>
+        <table style={{width:'100%',fontSize:12.5}}>
+          <thead><tr><th>Learning Area</th><th>Grade 7</th><th>Grade 8</th><th>Grade 9</th><th>Grade 10</th><th>Grade 11</th><th>Grade 12</th><th>Average</th></tr></thead>
+          <tbody>
+            {[['Mathematics',80,76,74,82,79,85],['English',84,82,80,83,81,87],['Kiswahili',82,80,78,81,79,84],['Int. Science',79,75,73,'—','—','—'],['Physics','—','—','—',78,76,80],['Chemistry','—','—','—',76,74,78],['Biology','—','—','—',80,78,82],['Computer Sc.',85,83,81,84,82,86]].map(([area,...scores])=>{
+              const nums=scores.filter(s=>s!=='—');const avg=Math.round(nums.reduce((a,b)=>a+b,0)/nums.length);
+              const bg=v=>v==='—'?'var(--gray-100)':v>=85?'#c8e6c9':v>=80?'#dcedc8':v>=75?'#fff9c4':v>=70?'#ffe0b2':'#ffcdd2';
+              const tc=v=>v==='—'?'var(--gray-400)':v>=80?'#1b5e20':v>=70?'#e65100':'#b71c1c';
+              return <tr key={area}><td style={{fontWeight:600}}>{area}</td>{scores.map((s,i)=><td key={i} style={{background:bg(s),color:tc(s),textAlign:'center',borderRadius:4,fontWeight:700,padding:'8px 4px'}}>{s}</td>)<td style={{background:bg(avg),color:tc(avg),textAlign:'center',borderRadius:4,fontWeight:800,padding:'8px 4px'}}>{avg}</td></tr>;
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div></div>
+    <div className="card"><div className="card-header"><span className="card-title">CBC Competency Achievement Distribution</span></div><div className="card-body">
+      <div style={{height:220}}><ResponsiveContainer width="100%" height="100%"><BarChart data={COMPETENCY_DATA.map(c=>({name:c.name.split(' ')[0],score:c.score}))}><XAxis dataKey="name" tick={{fontSize:11}}/><YAxis domain={[0,100]} tick={{fontSize:11}}/><Tooltip/><Bar dataKey="score" radius={[4,4,0,0]}>{COMPETENCY_DATA.map((c,i)=><Cell key={i} fill={c.score>=80?'#0a7c4b':c.score>=70?'#1a73e8':'#c8860a'}/>)}</Bar></BarChart></ResponsiveContainer></div>
+    </div></div>
+  </div>
+);
+
+// PATHWAYS PAGE
+const PathwaysPage = () => {
+  const [tab, setTab] = useState('overview');
+  const pathways = [
+    {key:'STEM',label:'STEM Pathway',color:'#1a73e8',bg:'#e8f0fe',border:'#4285f4',icon:'🔬',students:220,areas:['Mathematics','Physics','Chemistry','Biology','Computer Science'],desc:'Science, Technology, Engineering & Mathematics track for learners with aptitude and interest in STEM fields.'},
+    {key:'Arts',label:'Arts & Sports Science',color:'#c2185b',bg:'#fce8f3',border:'#e91e8c',icon:'🎨',students:140,areas:['Creative Arts','Music & Drama','Physical Education','Sports Science'],desc:'Develops talent in creative and performance arts, visual arts, sports, and physical education.'},
+    {key:'Social',label:'Social Sciences',color:'#2e7d32',bg:'#e8f5e9',border:'#43a047',icon:'🌍',students:160,areas:['History','Geography','Business Studies','Languages'],desc:'Humanities, social sciences, business and language studies for learners interested in people and society.'},
+    {key:'Junior',label:'Junior Secondary',color:'#f57f17',bg:'#fff8e1',border:'#f9a825',icon:'📚',students:380,areas:['English','Kiswahili','Mathematics','Integrated Science','Health Education','Pre-Technical Studies','Social Studies','Religious Education'],desc:'Broad-based curriculum for Grade 7–9 learners exploring competencies before pathway selection.'},
+  ];
+  return (
+    <div>
+      <div style={{marginBottom:24}}>
+        <div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>CBC Pathway Management</div>
+        <div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>Kenya CBC Junior Secondary & Senior School learning pathways</div>
+      </div>
+      <div className="tabs">
+        {['overview','junior','senior','selection'].map(t=><div key={t} className={`tab${tab===t?' active':''}`} onClick={()=>setTab(t)} style={{textTransform:'capitalize'}}>{t==='junior'?'Junior Secondary (Gr.7–9)':t==='senior'?'Senior School (Gr.10–12)':t==='selection'?'Pathway Selection':t.charAt(0).toUpperCase()+t.slice(1)}</div>)}
+      </div>
+      {tab==='overview' && (
+        <div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:24}}>
+            {pathways.map(p=>(
+              <div key={p.key} style={{background:p.bg,border:`2px solid ${p.border}`,borderRadius:14,padding:20,cursor:'pointer',transition:'all .2s'}} onMouseOver={e=>{e.currentTarget.style.boxShadow='0 8px 24px rgba(0,0,0,.1)'}} onMouseOut={e=>{e.currentTarget.style.boxShadow=''}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
+                  <div style={{fontSize:32}}>{p.icon}</div>
+                  <div style={{textAlign:'right'}}><div style={{fontSize:28,fontWeight:800,fontFamily:'Sora,sans-serif',color:p.color}}>{p.students}</div><div style={{fontSize:11,color:'var(--gray-500)',textTransform:'uppercase',letterSpacing:'.04em'}}>Students</div></div>
+                </div>
+                <div style={{fontWeight:800,fontSize:16,color:p.color,marginBottom:6,fontFamily:'Sora,sans-serif'}}>{p.label}</div>
+                <div style={{fontSize:12.5,color:'var(--gray-600)',marginBottom:12,lineHeight:1.5}}>{p.desc}</div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+                  {p.areas.map(a=><span key={a} style={{background:'rgba(255,255,255,.7)',color:p.color,borderRadius:20,padding:'2px 9px',fontSize:11,fontWeight:600}}>{a}</span>)}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="card"><div className="card-header"><span className="card-title">CBC Pathway Distribution</span></div><div className="card-body">
+            <div style={{height:220}}><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={PATHWAY_DIST} cx="50%" cy="50%" outerRadius={90} paddingAngle={3} dataKey="value" label={({name,value})=>`${name}: ${value}`}>{PATHWAY_DIST.map((e,i)=><Cell key={i} fill={e.color}/>)}</Pie><Tooltip/></PieChart></ResponsiveContainer></div>
+          </div></div>
+        </div>
+      )}
+      {tab==='junior' && (
+        <div className="card"><div className="card-header"><span className="card-title">Junior Secondary Curriculum (Grade 7–9)</span><span className="badge badge-gold">CBC Framework</span></div><div className="card-body">
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+            <div>
+              <div style={{fontWeight:700,marginBottom:12,color:'var(--gray-800)'}}>Core Learning Areas</div>
+              {['English Language','Kiswahili Language','Mathematics','Integrated Science','Health Education','Pre-Technical Studies','Social Studies','Religious Education (CRE/IRE/HRE)'].map(a=>(
+                <div key={a} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 0',borderBottom:'1px solid var(--gray-100)'}}><div style={{width:6,height:6,borderRadius:'50%',background:'var(--green)',flexShrink:0}}/><span style={{fontSize:13}}>{a}</span></div>
+              ))}
+            </div>
+            <div>
+              <div style={{fontWeight:700,marginBottom:12,color:'var(--gray-800)'}}>Optional Learning Areas</div>
+              {['Agriculture','Computer Science','Home Science','Business Studies','Visual Arts','Music','Foreign Language'].map(a=>(
+                <div key={a} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 0',borderBottom:'1px solid var(--gray-100)'}}><div style={{width:6,height:6,borderRadius:'50%',background:'var(--blue)',flexShrink:0}}/><span style={{fontSize:13}}>{a}</span></div>
+              ))}
+              <div style={{background:'var(--green-l)',borderRadius:10,padding:14,marginTop:16}}>
+                <div style={{fontWeight:700,fontSize:13,color:'var(--green-d)',marginBottom:6}}>Assessment Model</div>
+                <div style={{fontSize:12.5,color:'var(--gray-700)',lineHeight:1.6}}>Learners are assessed through School-Based Assessment (SBA), project work, portfolios, and national assessments aligned with KNEC standards.</div>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      )}
+      {tab==='senior' && (
+        <div className="grid-3">
+          {pathways.filter(p=>p.key!=='Junior').map(p=>(
+            <div key={p.key} style={{background:p.bg,border:`2px solid ${p.border}`,borderRadius:14,padding:20}}>
+              <div style={{fontSize:28,marginBottom:8}}>{p.icon}</div>
+              <div style={{fontWeight:800,fontSize:15,color:p.color,marginBottom:8,fontFamily:'Sora,sans-serif'}}>{p.label}</div>
+              <div style={{fontSize:12.5,color:'var(--gray-600)',marginBottom:12,lineHeight:1.5}}>{p.desc}</div>
+              <div style={{fontWeight:700,fontSize:12,color:'var(--gray-700)',marginBottom:8}}>Learning Areas:</div>
+              {p.areas.map(a=><div key={a} style={{padding:'5px 0',borderBottom:'1px solid rgba(0,0,0,.05)',fontSize:12.5,display:'flex',alignItems:'center',gap:6}}><div style={{width:5,height:5,borderRadius:'50%',background:p.color}}/>{a}</div>)}
+              <div style={{marginTop:12,fontWeight:700,fontSize:24,fontFamily:'Sora,sans-serif',color:p.color,textAlign:'right'}}>{p.students} <span style={{fontSize:12,fontWeight:500}}>students</span></div>
+            </div>
+          ))}
+        </div>
+      )}
+      {tab==='selection' && (
+        <div>
+          <div className="card mb-4"><div className="card-header"><span className="card-title">Grade 9 Pathway Selection – 2025</span><span className="badge badge-red">Deadline: 28 Feb 2025</span></div><div className="card-body">
+            <div style={{background:'var(--gold-l)',border:'1px solid var(--gold)',borderRadius:10,padding:14,marginBottom:16}}><div style={{fontWeight:700,color:'var(--gold)',marginBottom:4}}>⚠ Important Notice</div><div style={{fontSize:13,color:'var(--gray-700)'}}>Grade 9 students must submit their Senior School pathway preference by 28th February 2025. Career guidance counseling sessions are available every Thursday 3:00–5:00 PM.</div></div>
+            <table style={{width:'100%',fontSize:13}}>
+              <thead><tr><th>Student</th><th>Grade</th><th>Top SBA Scores</th><th>Preference</th><th>Status</th></tr></thead>
+              <tbody>
+                {STUDENTS.filter(s=>s.grade==='Grade 9').map(s=>(
+                  <tr key={s.id}><td><div style={{display:'flex',alignItems:'center',gap:8}}><Avatar name={s.name} size={28}/><span style={{fontWeight:600}}>{s.name}</span></div></td><td>Grade 9</td><td><span className="badge badge-gray">Math: 85, Sci: 80</span></td><td><select className="form-control" style={{width:'auto',padding:'4px 8px',fontSize:12}}><option>STEM</option><option>Arts & Sports</option><option>Social Sciences</option></select></td><td><span className="badge badge-gold">Pending</span></td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div></div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ANNOUNCEMENTS PAGE
+const AnnouncementsPage = () => {
+  const [showModal, setShowModal] = useState(false);
+  const typeColors = {academic:'badge-blue',finance:'badge-gold',events:'badge-green',facilities:'badge-purple'};
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+        <div><div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>Announcements & Notices</div><div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>School communications & notifications</div></div>
+        <button className="btn btn-primary" onClick={()=>setShowModal(true)}><Icon n="plus" s={15}/> New Announcement</button>
+      </div>
+      {ANNOUNCEMENTS.map(a=>(
+        <div key={a.id} className="card mb-4" style={{border:a.urgent?'1.5px solid var(--red)':'1px solid var(--gray-200)'}}>
+          <div className="card-body">
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10}}>
+              <div style={{display:'flex',alignItems:'center',gap:10}}>
+                <div style={{width:40,height:40,borderRadius:10,background:a.urgent?'var(--red-l)':'var(--green-l)',display:'flex',alignItems:'center',justifyContent:'center'}}><Icon n="announce" c={a.urgent?'var(--red)':'var(--green)'} s={18}/></div>
+                <div>
+                  <div style={{fontWeight:700,fontSize:15}}>{a.title}</div>
+                  <div style={{fontSize:12,color:'var(--gray-400)',marginTop:2}}>{a.date}</div>
+                </div>
+              </div>
+              <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                {a.urgent&&<span className="badge badge-red">Urgent</span>}
+                <span className={`badge ${typeColors[a.type]}`} style={{textTransform:'capitalize'}}>{a.type}</span>
+              </div>
+            </div>
+            <div style={{fontSize:13.5,color:'var(--gray-700)',lineHeight:1.6,paddingLeft:50}}>{a.body}</div>
+          </div>
+        </div>
+      ))}
+      {showModal&&<div className="modal-overlay" onClick={()=>setShowModal(false)}><div className="modal" onClick={e=>e.stopPropagation()}>
+        <div className="modal-header"><span className="modal-title">New Announcement</span><button className="btn-icon" onClick={()=>setShowModal(false)}><Icon n="x" s={16}/></button></div>
+        <div className="modal-body">
+          <div className="form-group"><label className="form-label">Title</label><input className="form-control" placeholder="Announcement title…"/></div>
+          <div className="grid-2">
+            <div className="form-group"><label className="form-label">Category</label><select className="form-control"><option>Academic</option><option>Finance</option><option>Events</option><option>Facilities</option></select></div>
+            <div className="form-group"><label className="form-label">Audience</label><select className="form-control"><option>All</option><option>Students</option><option>Teachers</option><option>Parents</option></select></div>
+          </div>
+          <div className="form-group"><label className="form-label">Message</label><textarea className="form-control" rows={4} placeholder="Full announcement text…"/></div>
+          <div className="form-group"><label className="form-label" style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer'}}><input type="checkbox"/> Mark as Urgent</label></div>
+        </div>
+        <div className="modal-footer"><button className="btn btn-outline" onClick={()=>setShowModal(false)}>Cancel</button><button className="btn btn-primary">Publish Announcement</button></div>
+      </div></div>}
+    </div>
+  );
+};
+
+// LEARNING AREAS PAGE
+const LearningAreasPage = () => (
+  <div>
+    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+      <div><div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>Learning Areas</div><div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>CBC-aligned subject management</div></div>
+      <button className="btn btn-primary"><Icon n="plus" s={15}/> Add Learning Area</button>
+    </div>
+    <div className="card">
+      <div className="card-header"><span className="card-title">All Learning Areas</span><span className="badge badge-green">{LEARNING_AREAS.length} areas</span></div>
+      <div className="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>Learning Area</th><th>Pathways</th><th>HOD</th><th>Teachers</th><th>Actions</th></tr></thead>
+          <tbody>
+            {LEARNING_AREAS.map(la=>(
+              <tr key={la.id}>
+                <td><span style={{fontFamily:'monospace',fontSize:12,background:'var(--green-l)',color:'var(--green-d)',padding:'2px 7px',borderRadius:5,fontWeight:700}}>{la.code}</span></td>
+                <td style={{fontWeight:600}}>{la.name}</td>
+                <td><div style={{display:'flex',gap:4,flexWrap:'wrap'}}>{la.pathways.map(p=><PathwayBadge key={p} p={p}/>)}</div></td>
+                <td style={{fontSize:12.5,color:'var(--gray-600)'}}>{la.hod}</td>
+                <td><span className="badge badge-gray">{la.teachers} teachers</span></td>
+                <td><div style={{display:'flex',gap:4}}><button className="btn-icon"><Icon n="eye" s={14}/></button><button className="btn-icon"><Icon n="edit" s={14}/></button></div></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+);
+
+// ATTENDANCE PAGE
+const AttendancePage = () => {
+  const [grade, setGrade] = useState('Grade 8');
+  const today = new Date();
+  const days = Array.from({length:28},(_, i)=>i+1);
+  const attStatus = d => d>today.getDate()?'att-none':d%7===0||d%7===6?'att-none':Math.random()>0.15?'att-present':Math.random()>0.5?'att-absent':'att-late';
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+        <div><div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>Attendance Tracking</div><div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>CBC daily attendance management</div></div>
+        <div style={{display:'flex',gap:10}}>
+          <select className="form-control" style={{width:'auto'}} value={grade} onChange={e=>setGrade(e.target.value)}>
+            {['Grade 7','Grade 8','Grade 9','Grade 10','Grade 11','Grade 12'].map(g=><option key={g}>{g}</option>)}
+          </select>
+          <button className="btn btn-primary"><Icon n="check" s={14}/> Mark Attendance</button>
+        </div>
+      </div>
+      <div className="stat-grid" style={{gridTemplateColumns:'repeat(4,1fr)',marginBottom:24}}>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f5ef'}}><Icon n="check" c="var(--green)" s={20}/></div><div><div className="stat-label">Present Today</div><div className="stat-value" style={{color:'var(--green)'}}>143</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fdecea'}}><Icon n="x" c="var(--red)" s={20}/></div><div><div className="stat-label">Absent</div><div className="stat-value" style={{color:'var(--red)'}}>7</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#fff8e1'}}><Icon n="alert" c="var(--gold)" s={20}/></div><div><div className="stat-label">Late</div><div className="stat-value" style={{color:'var(--gold)'}}>3</div></div></div>
+        <div className="stat-card"><div className="stat-icon" style={{background:'#e8f0fe'}}><Icon n="trending" c="var(--blue)" s={20}/></div><div><div className="stat-label">Rate</div><div className="stat-value" style={{color:'var(--blue)'}}>93%</div></div></div>
+      </div>
+      <div className="grid-2 mb-6">
+        <div className="card"><div className="card-header"><span className="card-title">January 2025 Attendance Calendar</span></div><div className="card-body">
+          <div className="att-cal">
+            {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=><div key={d} className="att-day-head">{d}</div>)}
+            {Array.from({length:3}).map((_,i)=><div key={`e${i}`}/>)}
+            {days.map(d=>{
+              const dow=(d+2)%7;const weekend=dow===0||dow===6;
+              const cls=weekend?'att-none':d>15?'att-none':Math.random()>.1?'att-present':Math.random()>.5?'att-absent':'att-late';
+              return <div key={d} className={`att-day ${cls}`}>{d}</div>;
+            })}
+          </div>
+          <div style={{display:'flex',gap:12,marginTop:12,justifyContent:'center',fontSize:11}}>
+            {[['att-present','Present'],['att-absent','Absent'],['att-late','Late'],['att-none','N/A']].map(([c,l])=><div key={l} style={{display:'flex',alignItems:'center',gap:4}}><div className={`att-day ${c}`} style={{width:14,height:14,borderRadius:3,display:'inline-block'}}/><span style={{color:'var(--gray-500)'}}>{l}</span></div>)}
+          </div>
+        </div></div>
+        <div className="card"><div className="card-header"><span className="card-title">Student Attendance Register – Today</span></div><div className="card-body" style={{padding:'8px 12px'}}>
+          {STUDENTS.filter(s=>s.grade===grade).slice(0,6).map(s=>(
+            <div key={s.id} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 0',borderBottom:'1px solid var(--gray-100)'}}>
+              <Avatar name={s.name} size={28}/>
+              <div style={{flex:1}}><div style={{fontSize:13,fontWeight:600}}>{s.name}</div><div style={{fontSize:11,color:'var(--gray-400)'}}>Attendance: {s.attendance}%</div></div>
+              <div style={{display:'flex',gap:4}}>
+                {[['P','var(--green-l)','var(--green)'],['A','var(--red-l)','var(--red)'],['L','var(--gold-l)','var(--gold)']].map(([l,bg,col])=>(
+                  <button key={l} style={{width:28,height:28,borderRadius:6,background:l==='P'?'var(--green)':'transparent',color:l==='P'?'#fff':col,border:`1.5px solid ${col}`,fontWeight:700,fontSize:12,cursor:'pointer'}}>{l}</button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div></div>
+      </div>
+    </div>
+  );
+};
+
+// PARENT PORTAL PAGE
+const ParentPortalPage = () => (
+  <div>
+    <div style={{marginBottom:24}}>
+      <div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>Parent / Guardian Portal</div>
+      <div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>Communication & academic progress for parents</div>
+    </div>
+    <div style={{background:'linear-gradient(135deg,#1a73e8,#4285f4)',borderRadius:16,padding:24,color:'#fff',marginBottom:24}}>
+      <div style={{fontSize:13,color:'rgba(255,255,255,.65)',marginBottom:4}}>Logged in as Guardian of</div>
+      <div style={{fontSize:20,fontWeight:800,fontFamily:'Sora,sans-serif',marginBottom:4}}>Amina Osei – Grade 8A</div>
+      <div style={{fontSize:13,color:'rgba(255,255,255,.65)'}}>Adm. No: S001 · Junior Secondary · STEM Track</div>
+    </div>
+    <div className="grid-2 mb-6">
+      <div className="card"><div className="card-header"><span className="card-title">Academic Performance</span></div><div className="card-body">
+        {[['Mathematics','Exceeding',85,'var(--green)'],['English Language','Meeting',78,'var(--blue)'],['Integrated Science','Exceeding',88,'var(--green)'],['Kiswahili','Meeting',75,'var(--blue)'],['Computer Science','Meeting',82,'var(--blue)']].map(([s,l,p,c])=>(
+          <div key={s} style={{marginBottom:12}}>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}><span style={{fontSize:13,fontWeight:600}}>{s}</span><div style={{display:'flex',gap:8,alignItems:'center'}}><LevelBadge level={l}/><span style={{fontSize:12,fontWeight:700,color:c}}>{p}%</span></div></div>
+            <div className="progress"><div className="progress-bar" style={{width:p+'%',background:c}}/></div>
+          </div>
+        ))}
+      </div></div>
+      <div>
+        <div className="card mb-4"><div className="card-header"><span className="card-title">Attendance Status</span></div><div className="card-body">
+          <div style={{textAlign:'center',padding:'12px 0'}}>
+            <div style={{fontSize:48,fontWeight:800,fontFamily:'Sora,sans-serif',color:'var(--green)'}}>94%</div>
+            <div style={{fontSize:13,color:'var(--gray-500)'}}>Term 1 Attendance Rate</div>
+            <div style={{display:'flex',justifyContent:'center',gap:16,marginTop:12}}>
+              <div style={{textAlign:'center'}}><div style={{fontWeight:700,color:'var(--green)'}}>94</div><div style={{fontSize:11,color:'var(--gray-400)'}}>Present</div></div>
+              <div style={{textAlign:'center'}}><div style={{fontWeight:700,color:'var(--red)'}}>6</div><div style={{fontSize:11,color:'var(--gray-400)'}}>Absent</div></div>
+            </div>
+          </div>
+        </div></div>
+        <div className="card"><div className="card-header"><span className="card-title">Fee Status</span></div><div className="card-body">
+          <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}><span style={{color:'var(--gray-500)',fontSize:13}}>Term 1 2025</span><FeesBadge status="paid"/></div>
+          <div style={{fontWeight:700,fontSize:22,fontFamily:'Sora,sans-serif',color:'var(--green)'}}>Ksh 18,500 <span style={{fontSize:14,color:'var(--gray-400)',fontWeight:400}}>PAID</span></div>
+          <div style={{fontSize:12,color:'var(--gray-400)',marginTop:4}}>Last payment: 8 Jan 2025 via M-Pesa</div>
+        </div></div>
+      </div>
+    </div>
+    <div className="card"><div className="card-header"><span className="card-title">Recent Announcements for Parents</span></div><div className="card-body" style={{padding:'12px 16px'}}>
+      {ANNOUNCEMENTS.map(a=>(
+        <div key={a.id} style={{padding:'10px 0',borderBottom:'1px solid var(--gray-100)',display:'flex',gap:10}}>
+          <div style={{fontSize:18}}>{a.type==='academic'?'📚':a.type==='finance'?'💰':a.type==='events'?'🏆':'🏛'}</div>
+          <div><div style={{fontWeight:600,fontSize:13.5}}>{a.title}</div><div style={{fontSize:12,color:'var(--gray-500)',marginTop:2}}>{a.date}</div></div>
+        </div>
+      ))}
+    </div></div>
+  </div>
+);
+
+// SETTINGS PAGE
+const SettingsPage = () => (
+  <div>
+    <div style={{marginBottom:24}}><div style={{fontSize:22,fontWeight:800,fontFamily:'Sora,sans-serif'}}>System Settings</div><div style={{fontSize:13,color:'var(--gray-500)',marginTop:4}}>School configuration & system preferences</div></div>
+    <div className="grid-2">
+      <div>
+        <div className="card mb-4"><div className="card-header"><span className="card-title">School Information</span><button className="btn btn-outline btn-sm"><Icon n="edit" s={13}/> Edit</button></div><div className="card-body">
+          {[['School Name','Highway Secondary School'],['Type','Public Day School'],['Location','Mombasa Road, Nairobi County'],['Phone','+254 720 558078'],['Email','info@highwayschool.ac.ke'],['Curriculum','CBC (Competency-Based Curriculum)'],['KNEC Code','HWY-2024-001']].map(([k,v])=>(
+            <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid var(--gray-100)'}}><span style={{color:'var(--gray-500)',fontSize:13}}>{k}</span><span style={{fontWeight:600,fontSize:13}}>{v}</span></div>
+          ))}
+        </div></div>
+        <div className="card"><div className="card-header"><span className="card-title">Academic Year Settings</span></div><div className="card-body">
+          {[['Current Year','2025'],['Current Term','Term 1 (Jan–Apr)'],['Term 1 Start','6 January 2025'],['Term 1 End','11 April 2025'],['CBC Framework','2024 Revised Edition']].map(([k,v])=>(
+            <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid var(--gray-100)'}}><span style={{color:'var(--gray-500)',fontSize:13}}>{k}</span><span style={{fontWeight:600,fontSize:13}}>{v}</span></div>
+          ))}
+        </div></div>
+      </div>
+      <div>
+        <div className="card mb-4"><div className="card-header"><span className="card-title">User Roles & Access</span></div><div className="card-body">
+          {[['Admin / Principal','Full system access',true],['Deputy Principal','Academic & finance',true],['Teacher','Assessments & timetable',true],['Student','View personal data',true],['Parent/Guardian','Child profile & fees',true]].map(([role,perm,active])=>(
+            <div key={role} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid var(--gray-100)'}}>
+              <div><div style={{fontSize:13,fontWeight:600}}>{role}</div><div style={{fontSize:12,color:'var(--gray-400)'}}>{perm}</div></div>
+              <span className={`badge ${active?'badge-green':'badge-gray'}`}>{active?'Active':'Inactive'}</span>
+            </div>
+          ))}
+        </div></div>
+        <div className="card"><div className="card-header"><span className="card-title">Notifications</span></div><div className="card-body">
+          {[['SMS Notifications','Parents & guardians'],['Email Alerts','Teachers & admin'],['Fee Reminders','Automated monthly'],['Attendance Alerts','Daily summary'],['Report Cards','End of term']].map(([n,d])=>(
+            <div key={n} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid var(--gray-100)'}}>
+              <div><div style={{fontSize:13,fontWeight:600}}>{n}</div><div style={{fontSize:12,color:'var(--gray-400)'}}>{d}</div></div>
+              <div style={{width:36,height:20,background:'var(--green)',borderRadius:99,position:'relative',cursor:'pointer'}}><div style={{width:16,height:16,background:'#fff',borderRadius:'50%',position:'absolute',top:2,right:2,transition:'.2s'}}/></div>
+            </div>
+          ))}
+        </div></div>
+      </div>
+    </div>
+  </div>
+);
+
+// ─── NAVIGATION CONFIG ────────────────────────────────────────────────────────
+const NAV = [
+  {section:'Main',items:[{key:'dashboard',label:'Dashboard',icon:'home'}]},
+  {section:'People',items:[{key:'students',label:'Students',icon:'students'},{key:'teachers',label:'Teachers',icon:'teacher'},{key:'parents',label:'Parent Portal',icon:'parent'}]},
+  {section:'Academics',items:[{key:'learning-areas',label:'Learning Areas',icon:'academic'},{key:'pathways',label:'CBC Pathways',icon:'pathway'},{key:'assessments',label:'Assessments & SBA',icon:'assessment'},{key:'timetable',label:'Timetable',icon:'timetable'},{key:'attendance',label:'Attendance',icon:'attendance'}]},
+  {section:'Management',items:[{key:'finance',label:'Finance & Fees',icon:'finance',badge:'3'},{key:'analytics',label:'Analytics',icon:'analytics'},{key:'announcements',label:'Announcements',icon:'announce',badge:'2'}]},
+  {section:'System',items:[{key:'documents',label:'Documents',icon:'doc'},{key:'settings',label:'Settings',icon:'settings'}]},
+];
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
+const App = () => {
+  const [page, setPage] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const navigate = useCallback(p => { setPage(p); setSidebarOpen(false); }, []);
+
+  const renderPage = () => {
+    switch(page) {
+      case 'dashboard': return <Dashboard/>;
+      case 'students': return <StudentsPage/>;
+      case 'teachers': return <TeachersPage/>;
+      case 'assessments': return <AssessmentsPage/>;
+      case 'timetable': return <TimetablePage/>;
+      case 'finance': return <FinancePage/>;
+      case 'analytics': return <AnalyticsPage/>;
+      case 'pathways': return <PathwaysPage/>;
+      case 'announcements': return <AnnouncementsPage/>;
+      case 'attendance': return <AttendancePage/>;
+      case 'learning-areas': return <LearningAreasPage/>;
+      case 'parents': return <ParentPortalPage/>;
+      case 'settings': return <SettingsPage/>;
+      default: return <div style={{padding:40,textAlign:'center',color:'var(--gray-400)'}}>Page coming soon</div>;
+    }
+  };
+
+  const pageTitle = NAV.flatMap(s=>s.items).find(i=>i.key===page)?.label || 'Dashboard';
+
+  return (
+    <>
+      {/* SIDEBAR */}
+      <aside className={`sidebar${sidebarOpen?' open':''}`}>
+        <div className="sidebar-brand">
+          <div className="sidebar-brand-logo">H</div>
+          <div className="sidebar-brand-name">Highway Secondary</div>
+          <div className="sidebar-brand-sub">CBC School Management System</div>
+        </div>
+        <nav className="sidebar-nav">
+          {NAV.map(section=>(
+            <div key={section.section}>
+              <div className="nav-section">{section.section}</div>
+              {section.items.map(item=>(
+                <div key={item.key} className={`nav-item${page===item.key?' active':''}`} onClick={()=>navigate(item.key)}>
+                  <Icon n={item.icon} s={16}/>
+                  {item.label}
+                  {item.badge&&<span className="nav-badge">{item.badge}</span>}
+                </div>
+              ))}
+            </div>
+          ))}
+        </nav>
+        <div className="sidebar-footer">
+          <div className="user-pill">
+            <div className="user-avatar">P</div>
+            <div><div className="user-name">Principal</div><div className="user-role">Admin · Highway Sec.</div></div>
+          </div>
+        </div>
+      </aside>
+
+      {/* MAIN */}
+      <main className="main">
+        <header className="topbar">
+          <button className="btn-icon" style={{display:'none'}} onClick={()=>setSidebarOpen(!sidebarOpen)}><Icon n="menu" s={18}/></button>
+          <div>
+            <div className="topbar-title">{pageTitle}</div>
+            <div className="topbar-sub">Highway Secondary School · Term 1 2025</div>
+          </div>
+          <div className="topbar-actions">
+            <div className="search-box"><Icon n="search" s={14}/><input placeholder="Quick search…"/></div>
+            <button className="btn-icon" style={{position:'relative'}} onClick={()=>navigate('announcements')}>
+              <Icon n="bell" s={17}/>
+              <span style={{position:'absolute',top:6,right:6,width:7,height:7,background:'var(--red)',borderRadius:'50%',border:'1.5px solid #fff'}}/>
+            </button>
+            <div style={{width:34,height:34,borderRadius:'50%',background:'var(--green)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700,fontSize:13,cursor:'pointer'}}>P</div>
+          </div>
+        </header>
+        <div className="page">{renderPage()}</div>
+      </main>
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
